@@ -1,0 +1,23 @@
+{
+    "name": "UIP.Editor",
+    "rootNamespace": "UIP.EditorTools",
+    "references": [
+        "UIP.App",
+        "UIP.UI",
+        "UIP.Core",
+        "UIP.Content",
+        "UIP.Features",
+        "UIP.Persistence"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,0 +1,16 @@
+{
+    "name": "UIP.Persistence",
+    "rootNamespace": "UIP.Persistence",
+    "references": [
+        "UIP.Core"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

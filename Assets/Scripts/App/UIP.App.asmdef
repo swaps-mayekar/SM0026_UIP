@@ -1,0 +1,21 @@
+{
+    "name": "UIP.App",
+    "rootNamespace": "UIP.App",
+    "references": [
+        "UIP.Core",
+        "UIP.Content",
+        "UIP.Persistence",
+        "UIP.Features",
+        "UIP.UI",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

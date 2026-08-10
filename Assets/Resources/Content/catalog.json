@@ -1,0 +1,3197 @@
+{
+  "schemaVersion": 1,
+  "contentVersion": "1.0.0",
+  "topics": [
+    {
+      "id": "basics",
+      "name": "Unity Basics",
+      "description": "Core engine concepts every candidate should explain clearly.",
+      "iconKey": "basics",
+      "sortOrder": 1
+    },
+    {
+      "id": "gameobject",
+      "name": "GameObject & Components",
+      "description": "Composition model, components, and scene hierarchy.",
+      "iconKey": "gameobject",
+      "sortOrder": 2
+    },
+    {
+      "id": "lifecycle",
+      "name": "MonoBehaviour Lifecycle",
+      "description": "Initialization, frame loop, and teardown order.",
+      "iconKey": "lifecycle",
+      "sortOrder": 3
+    },
+    {
+      "id": "physics",
+      "name": "Physics",
+      "description": "Colliders, rigidbodies, queries, and simulation.",
+      "iconKey": "physics",
+      "sortOrder": 4
+    },
+    {
+      "id": "ui",
+      "name": "UI",
+      "description": "uGUI/UI Toolkit layout, events, and canvas strategy.",
+      "iconKey": "ui",
+      "sortOrder": 5
+    },
+    {
+      "id": "animation",
+      "name": "Animation",
+      "description": "Animator, timelines, and state-driven motion.",
+      "iconKey": "animation",
+      "sortOrder": 6
+    },
+    {
+      "id": "navigation",
+      "name": "Navigation",
+      "description": "NavMesh baking, agents, and path queries.",
+      "iconKey": "navigation",
+      "sortOrder": 7
+    },
+    {
+      "id": "audio",
+      "name": "Audio",
+      "description": "Sources, listeners, mixers, and spatialization.",
+      "iconKey": "audio",
+      "sortOrder": 8
+    },
+    {
+      "id": "scriptable",
+      "name": "ScriptableObjects",
+      "description": "Data-driven design and shared configuration assets.",
+      "iconKey": "scriptable",
+      "sortOrder": 9
+    },
+    {
+      "id": "addressables",
+      "name": "Addressables",
+      "description": "Async content loading and reference management.",
+      "iconKey": "addressables",
+      "sortOrder": 10
+    },
+    {
+      "id": "bundles",
+      "name": "Asset Bundles",
+      "description": "Packaging, dependencies, and runtime loading.",
+      "iconKey": "bundles",
+      "sortOrder": 11
+    },
+    {
+      "id": "rendering",
+      "name": "Rendering",
+      "description": "Cameras, materials, batches, and draw calls.",
+      "iconKey": "rendering",
+      "sortOrder": 12
+    },
+    {
+      "id": "srp",
+      "name": "URP/HDRP",
+      "description": "Scriptable render pipelines and feature trade-offs.",
+      "iconKey": "srp",
+      "sortOrder": 13
+    },
+    {
+      "id": "dots",
+      "name": "ECS/DOTS",
+      "description": "Data-oriented design and jobified simulation.",
+      "iconKey": "dots",
+      "sortOrder": 14
+    },
+    {
+      "id": "multiplayer",
+      "name": "Multiplayer",
+      "description": "Authority, prediction, and network topology.",
+      "iconKey": "multiplayer",
+      "sortOrder": 15
+    },
+    {
+      "id": "mobile",
+      "name": "Mobile Optimization",
+      "description": "Budgets, thermal limits, and device variance.",
+      "iconKey": "mobile",
+      "sortOrder": 16
+    },
+    {
+      "id": "build",
+      "name": "Build Pipeline",
+      "description": "Player settings, CI builds, and addressable catalogs.",
+      "iconKey": "build",
+      "sortOrder": 17
+    },
+    {
+      "id": "csharp",
+      "name": "C#",
+      "description": "Language features interviewers expect in Unity code.",
+      "iconKey": "csharp",
+      "sortOrder": 18
+    },
+    {
+      "id": "oop",
+      "name": "OOP",
+      "description": "Encapsulation, inheritance, and composition choices.",
+      "iconKey": "oop",
+      "sortOrder": 19
+    },
+    {
+      "id": "patterns",
+      "name": "Design Patterns",
+      "description": "Practical patterns used in production Unity projects.",
+      "iconKey": "patterns",
+      "sortOrder": 20
+    },
+    {
+      "id": "algorithms",
+      "name": "Algorithms",
+      "description": "Problem-solving patterns applied to gameplay systems.",
+      "iconKey": "algorithms",
+      "sortOrder": 21
+    },
+    {
+      "id": "datastruct",
+      "name": "Data Structures",
+      "description": "Collections choices and memory implications.",
+      "iconKey": "datastruct",
+      "sortOrder": 22
+    }
+  ],
+  "questions": [
+    {
+      "id": "q_basics_01",
+      "topicId": "basics",
+      "prompt": "An interviewer asks you to explain what a scene represents in a Unity project and how players typically move between scenes. How would you answer?",
+      "interviewerIntent": "Check whether you understand scenes as authored content containers and can describe practical loading strategies.",
+      "idealAnswer": "A scene is a self-contained collection of GameObjects, lighting, cameras, and settings that define a playable or menu space. Projects usually split content across multiple scenes (boot, menus, levels). You load them with SceneManager using single or additive modes, often through a lightweight bootstrap scene that owns managers and then loads gameplay additively.",
+      "commonMistakes": [
+        "Saying a scene is just a screenshot or prefab",
+        "Ignoring additive loading and Addressables/scene dependencies",
+        "Forgetting that DontDestroyOnLoad objects survive scene unloads"
+      ],
+      "followUps": [
+        "When would you choose additive loading over single-scene loading?",
+        "How do you avoid duplicated EventSystems across additive scenes?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "scenes",
+        "SceneManager"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_basics_02",
+      "topicId": "basics",
+      "prompt": "During an interview you are asked when you should initialize references in Awake versus Start. How would you structure your answer?",
+      "interviewerIntent": "Validate lifecycle literacy and dependency ordering awareness.",
+      "idealAnswer": "Awake runs when the instance is loaded and is ideal for self-initialization and caching own components. Start runs before the first Update after all Awakes, so it is safer for talking to other objects that need their Awake completed. Prefer explicit injection or ScriptableObject/event wiring for complex graphs instead of relying only on order.",
+      "commonMistakes": [
+        "Claiming Awake and Start are interchangeable",
+        "Putting cross-object setup only in Awake without justifying order",
+        "Using FindObjectOfType in both without caching"
+      ],
+      "followUps": [
+        "How do execution order settings change this advice?",
+        "Where do coroutines started in Awake fit relative to Start?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "Awake",
+        "Start",
+        "lifecycle"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_basics_03",
+      "topicId": "basics",
+      "prompt": "How would you explain Prefabs and Prefab Variants to a hiring manager who cares about team scalability?",
+      "interviewerIntent": "See if you can connect Prefabs to collaboration and reuse, not just drag-and-drop convenience.",
+      "idealAnswer": "Prefabs are reusable GameObject templates with serialized overrides. Variants inherit from a base Prefab and let teams specialize (enemy types, button styles) while retaining shared updates. Prefer variants and nested Prefabs over duplicated scene objects so bug fixes and art updates propagate safely.",
+      "commonMistakes": [
+        "Treating Prefabs as only an Editor convenience with no runtime meaning",
+        "Duplicating Prefabs instead of using variants",
+        "Ignoring override hygiene and nested Prefab breakage"
+      ],
+      "followUps": [
+        "How do you resolve conflicting Prefab overrides in source control?",
+        "When is a ScriptableObject better than Prefab configuration?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "prefabs",
+        "variants"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_basics_04",
+      "topicId": "basics",
+      "prompt": "A studio asks how you debug a null reference that only appears after a scene reload. What process do you describe?",
+      "interviewerIntent": "Probe practical debugging discipline under Unity-specific lifetime issues.",
+      "idealAnswer": "Reproduce reliably, note whether the object is destroyed, disabled, or replaced on reload. Inspect DontDestroyOnLoad survivors, event subscriptions that outlive listeners, and cached references set in a previous scene. Use the Profiler/memory snapshot if leaked objects remain, and prefer weak event patterns or explicit teardown in OnDestroy.",
+      "commonMistakes": [
+        "Only restarting the Editor without isolating lifecycle",
+        "Blaming GC without checking destroyed Unity objects",
+        "Ignoring that destroyed Unity objects compare equal to null"
+      ],
+      "followUps": [
+        "How do you safely unsubscribe from static events?",
+        "What is the difference between a C# null and a destroyed UnityEngine.Object?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "debugging",
+        "lifecycle"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_gameobject_01",
+      "topicId": "gameobject",
+      "prompt": "Explain the relationship between GameObjects and Components as if teaching a junior teammate.",
+      "interviewerIntent": "Confirm composition-first mental model.",
+      "idealAnswer": "GameObjects are containers in the hierarchy; Components provide behavior and data (Transform is mandatory). Favor composition\u2014add focused components\u2014over deep MonoBehaviour inheritance. Communication can use GetComponent, serialized references, interfaces, or events.",
+      "commonMistakes": [
+        "Saying scripts somehow replace GameObjects",
+        "Heavy inheritance trees for every enemy type",
+        "Calling GetComponent repeatedly in Update"
+      ],
+      "followUps": [
+        "Why is Transform special?",
+        "How do interfaces help decouple components?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "composition",
+        "components"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_gameobject_02",
+      "topicId": "gameobject",
+      "prompt": "When is GetComponent acceptable, and when should you avoid it?",
+      "interviewerIntent": "Performance and architecture judgment.",
+      "idealAnswer": "GetComponent is fine during initialization (Awake/Start) or infrequent events if you cache the result. Avoid per-frame lookups and scene-wide searches. Prefer serialized references assigned in the Inspector for known dependencies, and dependency injection for testability.",
+      "commonMistakes": [
+        "Using GetComponent in Update without caching",
+        "Using FindObjectOfType every spawn",
+        "Assuming GetComponentInChildren is free"
+      ],
+      "followUps": [
+        "Compare GetComponent vs TryGetComponent.",
+        "How do you mock components in EditMode tests?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "GetComponent",
+        "performance"
+      ],
+      "codeSnippet": "void Awake(){ _rb = GetComponent<Rigidbody>(); }"
+    },
+    {
+      "id": "q_gameobject_03",
+      "topicId": "gameobject",
+      "prompt": "How would you design a damage pipeline across Health, Armor, and StatusEffect components without hard references everywhere?",
+      "interviewerIntent": "Look for decoupling patterns.",
+      "idealAnswer": "Define a small interface or message (IDamageable / DamageInfo). Route damage through a central handler on the target that applies modifiers from Armor/Status components. Use events or a mediator so weapons do not need concrete Health types. Keep data in structs where possible for clarity.",
+      "commonMistakes": [
+        "Weapons directly FindObjectOfType<Health>",
+        "God-object GameManager applying all damage",
+        "String-based SendMessage as the primary design"
+      ],
+      "followUps": [
+        "How do you unit-test damage modifiers?",
+        "Where do networked authenticity checks belong?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "interfaces",
+        "events"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_gameobject_04",
+      "topicId": "gameobject",
+      "prompt": "What happens when you disable a GameObject versus disable a single Behaviour?",
+      "interviewerIntent": "Nuanced runtime behavior understanding.",
+      "idealAnswer": "Disabling a Behaviour stops its Update/coroutines for that script but leaves other components active. Disabling the GameObject deactivates the whole object: renderers, colliders (depending on settings), child activity, and most lifecycle callbacks pause. OnDisable/OnEnable fire accordingly.",
+      "commonMistakes": [
+        "Equating SetActive(false) with Destroy",
+        "Forgetting OnEnable runs again on reactivation",
+        "Assuming disabled objects cannot be found with Find"
+      ],
+      "followUps": [
+        "Does a disabled collider still block raycasts?",
+        "How do object pools typically use SetActive?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 90,
+      "tags": [
+        "SetActive",
+        "OnEnable"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_lifecycle_01",
+      "topicId": "lifecycle",
+      "prompt": "Order the common MonoBehaviour callbacks from creation through the first frame.",
+      "interviewerIntent": "Fundamental callback sequencing.",
+      "idealAnswer": "Typical order: Awake \u2192 OnEnable \u2192 Start \u2192 FixedUpdate (may run) \u2192 Update \u2192 LateUpdate \u2192 rendering. Exact timing can vary with physics timestep and script execution order. OnDisable/OnDestroy appear on teardown.",
+      "commonMistakes": [
+        "Putting Start before Awake",
+        "Ignoring OnEnable between Awake and Start",
+        "Assuming FixedUpdate always runs once per Update"
+      ],
+      "followUps": [
+        "Where does Reset fit?",
+        "When does OnApplicationPause matter on mobile?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "callbacks",
+        "order"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_lifecycle_02",
+      "topicId": "lifecycle",
+      "prompt": "Why can starting a coroutine in OnDisable or OnDestroy be risky?",
+      "interviewerIntent": "Edge-case lifecycle maturity.",
+      "idealAnswer": "Coroutines require an active MonoBehaviour host. Starting one while disabling/destroying can no-op or fail. Work that must continue should live on a persistent runner object, or be converted to synchronous cleanup / UniTask/async with clear lifetime ownership.",
+      "commonMistakes": [
+        "Assuming coroutines outlive their Behaviour",
+        "Doing heavy IO in OnDestroy on quit",
+        "Forgetting StopAllCoroutines on pool release"
+      ],
+      "followUps": [
+        "How do you cancel async work when an object is destroyed?",
+        "What is a coroutine runner pattern?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "coroutines",
+        "OnDestroy"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_lifecycle_03",
+      "topicId": "lifecycle",
+      "prompt": "How do Script Execution Order settings interact with Awake/Start dependencies?",
+      "interviewerIntent": "Advanced initialization control.",
+      "idealAnswer": "Execution order changes the relative order of the same callback across scripts. It can fix fragile Awake dependencies but becomes hard to maintain. Prefer explicit init methods, service locators established in a bootstrap scene, or dependency injection over spreading order attributes everywhere.",
+      "commonMistakes": [
+        "Using execution order as the only architecture",
+        "Circular dependencies masked by order hacks"
+      ],
+      "followUps": [
+        "How would you migrate off execution order attributes?",
+        "What are default time constraints for player scripts?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "execution order",
+        "bootstrap"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_lifecycle_04",
+      "topicId": "lifecycle",
+      "prompt": "Describe a clean pattern for singleton managers that still respect domain reloads and scene changes.",
+      "interviewerIntent": "Practical singleton caution.",
+      "idealAnswer": "Use a bootstrap scene or RuntimeInitializeOnLoadMethod, guard instance creation, and clear statics on domain reload in Editor. Prefer DontDestroyOnLoad sparingly, avoid FindObjectOfType fallbacks in Update, and consider ScriptableObject-based event channels instead of singleton god objects.",
+      "commonMistakes": [
+        "Public static Instance set in Awake without null guards",
+        "Multiple DontDestroyOnLoad duplicates",
+        "Keeping huge mutable state in statics"
+      ],
+      "followUps": [
+        "How do you test code that depends on a singleton?",
+        "When is a service locator preferable?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "singleton",
+        "DontDestroyOnLoad"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_physics_01",
+      "topicId": "physics",
+      "prompt": "When should a GameObject use a Collider without a Rigidbody?",
+      "interviewerIntent": "Physics composition basics.",
+      "idealAnswer": "Static or kinematic environment geometry often uses Colliders alone. Moving physics actors usually need Rigidbody so the simulation owns motion. Trigger volumes can be Collider.isTrigger with at least one Rigidbody in the pair for callbacks, depending on matrix settings.",
+      "commonMistakes": [
+        "Adding Rigidbody to every mesh 'just in case'",
+        "Moving static colliders every frame without Rigidbody",
+        "Ignoring collision matrix layers"
+      ],
+      "followUps": [
+        "Kinematic vs dynamic Rigidbody?",
+        "How do Continuous collision detection modes differ?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "collider",
+        "rigidbody"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_physics_02",
+      "topicId": "physics",
+      "prompt": "How do you move a Rigidbody character correctly?",
+      "interviewerIntent": "Forces vs transform manipulation.",
+      "idealAnswer": "Drive physics bodies via Rigidbody API (AddForce, MovePosition in FixedUpdate for kinematic/interpolated cases). Avoid setting transform.position every frame on dynamic bodies, which fights the simulator and breaks interpolation. Pair FixedUpdate input sampling carefully with Update camera code.",
+      "commonMistakes": [
+        "Moving dynamic Rigidbodies in Update via transform",
+        "Using Continuous speculative blindly for everything"
+      ],
+      "followUps": [
+        "Why FixedUpdate for physics?",
+        "How does interpolation smooth visuals?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "FixedUpdate",
+        "MovePosition"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_physics_03",
+      "topicId": "physics",
+      "prompt": "Design a hit-scan gun versus a projectile gun in Unity physics terms.",
+      "interviewerIntent": "Gameplay/physics trade-offs.",
+      "idealAnswer": "Hit-scan uses Raycast/SphereCast for instant fidelity and lower cost; apply damage at the hit point. Projectiles use Rigidbody or custom integration for travel time, gravity, and prediction. Choose based on weapon fantasy, networking needs, and performance. Layer masks and query triggers must be intentional.",
+      "commonMistakes": [
+        "Raycasting on Default layer without masks",
+        "Spawning uncapped Rigidbody bullets"
+      ],
+      "followUps": [
+        "How do you reconcile hit-scan with lag compensation?",
+        "When do you use RaycastCommand jobs?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "raycast",
+        "projectiles"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_physics_04",
+      "topicId": "physics",
+      "prompt": "What causes phantom forces or jitter in stacked rigidbodies, and how do you mitigate it?",
+      "interviewerIntent": "Senior physics debugging.",
+      "idealAnswer": "Common causes: mixing transform and physics motion, inappropriate solver iterations, conflicting constraints, large timestep, scale issues, and continuous collision mismatches. Mitigate with correct body types, contact modifications, joint configuration, Discrete vs Continuous choices, and profiling Contacts/CPU time.",
+      "commonMistakes": [
+        "Only lowering timescale",
+        "Scaling non-uniformly and ignoring inertia tensors"
+      ],
+      "followUps": [
+        "How do Physics.Simulate and manual simulation help tests?",
+        "What is a contact modification callback used for?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "jitter",
+        "solver"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_ui_01",
+      "topicId": "ui",
+      "prompt": "Compare Screen Space Overlay, Screen Space Camera, and World Space canvases.",
+      "interviewerIntent": "Canvas mode literacy.",
+      "idealAnswer": "Overlay renders on top without a camera and is common for HUD. Screen Space Camera respects camera settings/stacking and sorting with 3D. World Space places UI in the scene for diegetic interfaces. Choice affects sorting, performance, and interaction raycasters.",
+      "commonMistakes": [
+        "Using World Space for every mobile menu",
+        "Multiple overlay canvases rebuilt constantly"
+      ],
+      "followUps": [
+        "Why split canvases by dirty frequency?",
+        "GraphicRaycaster vs PhysicsRaycaster?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "canvas",
+        "HUD"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_ui_02",
+      "topicId": "ui",
+      "prompt": "How do you keep UI responsive across iPhone safe areas and aspect ratios?",
+      "interviewerIntent": "Mobile UI craftsmanship.",
+      "idealAnswer": "Use anchors/safe-area padders driven by Screen.safeArea, relative layout rather than absolute pixels, and reference resolution scalers. Test notch devices and tablets. Prefer adaptable layouts over hard-coded positions.",
+      "commonMistakes": [
+        "Designing only for 1080x1920",
+        "Ignoring home indicator insets"
+      ],
+      "followUps": [
+        "How does UI Toolkit differ in layout approach?",
+        "What breaks when you change Canvas Scaler mid-session?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "safe area",
+        "anchors"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_ui_03",
+      "topicId": "ui",
+      "prompt": "A inventory screen stutters when opening. What Unity UI performance checks do you run?",
+      "interviewerIntent": "UI performance diagnosis.",
+      "idealAnswer": "Look for canvas rebuilds, excessive Graphic rebuilds from nested layouts, too many Raycast Target flags, unpooled list items, and huge texture atlases. Split static/dynamic canvases, disable unused raycasts, pool list rows, and profile with Frame Debugger/UI Profiler.",
+      "commonMistakes": [
+        "Blaming GPU only",
+        "Instantiating all inventory rows each open without pooling"
+      ],
+      "followUps": [
+        "How do you detect a canvas rebuild storm?",
+        "When should you use UI Toolkit over uGUI?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "performance",
+        "pooling"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_ui_04",
+      "topicId": "ui",
+      "prompt": "How would you wire button interactions without spaghetti Inspector listeners?",
+      "interviewerIntent": "Architecture for UI.",
+      "idealAnswer": "Prefer code-driven registration in view presenters, event channels (ScriptableObject events), or MVVM-like bindings. Keep views thin, move logic to controllers/services, and ensure unsubscribe on destroy/disable.",
+      "commonMistakes": [
+        "Persistent Inspector listeners to destroyed objects",
+        "Business logic inside Button OnClick only"
+      ],
+      "followUps": [
+        "How do you unit-test UI interaction flows?",
+        "Pros/cons of UI Toolkit data binding?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "events",
+        "architecture"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_animation_01",
+      "topicId": "animation",
+      "prompt": "Explain Animator Controllers versus playing clips through code.",
+      "interviewerIntent": "Animation system selection.",
+      "idealAnswer": "Animator Controllers model stateful locomotion with parameters/transitions. Direct clip playback/Playables suits scripted moments, sequencing, or dynamic graphs. Many games mix Animator for characters and Timeline/Playables for cutscenes.",
+      "commonMistakes": [
+        "Giant monolithic controllers for all characters",
+        "Polling animation state only in LateUpdate without reason"
+      ],
+      "followUps": [
+        "What are Animator layers used for?",
+        "When do you choose Timeline?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "Animator",
+        "Playables"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_animation_02",
+      "topicId": "animation",
+      "prompt": "How do root motion and scripted movement coexist?",
+      "interviewerIntent": "Character movement nuance.",
+      "idealAnswer": "Root motion applies displacement from animation; scripted movement drives transform/Rigidbody from code. You can toggle Animator.applyRootMotion, blend by state, or extract root curves. Choose based on authoring fidelity vs deterministic gameplay/network needs.",
+      "commonMistakes": [
+        "Enabling root motion and also forcing transform writes every frame blindly",
+        "Ignoring authoritative multiplayer implications"
+      ],
+      "followUps": [
+        "How do you sync root motion over a network?",
+        "What is OnAnimatorMove?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "root motion",
+        "locomotion"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_animation_03",
+      "topicId": "animation",
+      "prompt": "Describe a maintainable approach to animation events for footsteps and combat notifies.",
+      "interviewerIntent": "Event hygiene.",
+      "idealAnswer": "Keep events sparse and semantic (FootstepL, HitConnect). Route them to a receiver component that maps to audio/VFX services. Avoid embedding irreversible gameplay logic solely in clips that art may retarget. Consider StateMachineBehaviours for enter/exit logic.",
+      "commonMistakes": [
+        "Dozens of unnamed events",
+        "Gameplay-critical damage only in animation events with no fallback"
+      ],
+      "followUps": [
+        "How do you handle event timing when animator speed changes?",
+        "StateMachineBehaviour vs animation events?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "animation events",
+        "SMB"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_navigation_01",
+      "topicId": "navigation",
+      "prompt": "What does a NavMesh represent and when is it a poor fit?",
+      "interviewerIntent": "Navigation fundamentals.",
+      "idealAnswer": "A NavMesh is a walkable surface abstraction for agent pathfinding. It fits grounded AI on relatively static geometry. It is a poor fit for highly dynamic mid-air movement, dense destructible terrain without rebake strategy, or continuous free-flight steering.",
+      "commonMistakes": [
+        "Assuming NavMesh handles jumping/flying automatically",
+        "Rebaking every frame"
+      ],
+      "followUps": [
+        "NavMeshAgent vs custom steering?",
+        "What are NavMeshLinks for?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "NavMesh",
+        "AI"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_navigation_02",
+      "topicId": "navigation",
+      "prompt": "How do you handle agents when a door opens or rubble blocks a path?",
+      "interviewerIntent": "Dynamic navigation.",
+      "idealAnswer": "Use NavMeshObstacle carving for temporary blockers, NavMesh links for doors/jumps, or runtime rebakes for larger topology changes. Agents should repath on failure and have fallback behaviors when paths are incomplete.",
+      "commonMistakes": [
+        "Only teleporting agents through doors",
+        "Carving obstacles with excessive quality on mobile"
+      ],
+      "followUps": [
+        "How do you detect path partial results?",
+        "Cost of carving vs rebaking?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "obstacles",
+        "repath"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_navigation_03",
+      "topicId": "navigation",
+      "prompt": "Compare NavMesh pathfinding with a grid A* approach for a tower-defense game.",
+      "interviewerIntent": "Algorithm selection.",
+      "idealAnswer": "NavMesh excels on irregular authored geometry; grid A* excels when build slots/paths are discrete and frequently mutate. Hybrid approaches exist. Discuss CPU cost, path smoothness, agent radii, and designer workflows.",
+      "commonMistakes": [
+        "Claiming one is universally better",
+        "Ignoring agent radius/voxel size implications"
+      ],
+      "followUps": [
+        "How do you share paths among many agents?",
+        "What is funneling/string pulling?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "A*",
+        "tower defense"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_audio_01",
+      "topicId": "audio",
+      "prompt": "How would you structure audio using Audio Mixer groups for a mobile game?",
+      "interviewerIntent": "Audio architecture.",
+      "idealAnswer": "Create groups for Music, SFX, UI, and Voice with exposed volume parameters. Route snapshots for pause/muffle states. Keep listener count sane, pool AudioSources, and duck music under dialogue.",
+      "commonMistakes": [
+        "One AudioSource for everything",
+        "Ignoring mixer snapshots for pause menus"
+      ],
+      "followUps": [
+        "2D vs 3D spatial blend guidance?",
+        "How do you handle iOS silent switch expectations?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "mixer",
+        "mobile"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_audio_02",
+      "topicId": "audio",
+      "prompt": "What causes audio pops when rapidly spawning effects, and how do you prevent them?",
+      "interviewerIntent": "Runtime audio quality.",
+      "idealAnswer": "Too many voices, abrupt starts without attack, resource thrashing, or stealy priority can cause pops. Use pooling, voice limits, randomized clips, and graceful stealing policies. Prefetch critical banks.",
+      "commonMistakes": [
+        "Instantiate AudioSource per footstep permanently",
+        "Maxing all sources to priority 0"
+      ],
+      "followUps": [
+        "How do Addressables interact with audio clip loading?",
+        "What is a virtual voice?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "pooling",
+        "voices"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_audio_03",
+      "topicId": "audio",
+      "prompt": "Design a footstep system that reacts to surface tags without huge Animator coupling.",
+      "interviewerIntent": "System design.",
+      "idealAnswer": "Detect ground material via raycast/terrain/physic material maps, publish a FootstepEvent with surface id, and let an AudioFoley service choose clips. Animation events only signal timing; surface resolution stays in gameplay code.",
+      "commonMistakes": [
+        "Hardcoding clip names inside every animation event",
+        "Raycasting without layer masks each event on many agents"
+      ],
+      "followUps": [
+        "How do you extend this to first-person vs AI?",
+        "Data-driven clip tables via ScriptableObjects?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "foley",
+        "ScriptableObjects"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_scriptable_01",
+      "topicId": "scriptable",
+      "prompt": "What problem do ScriptableObjects solve compared with MonoBehaviour fields alone?",
+      "interviewerIntent": "Data-oriented authoring.",
+      "idealAnswer": "ScriptableObjects store shared serializable data assets independent of scene instances\u2014balancing numbers, recipes, event channels\u2014reducing duplication and enabling designer iteration without code changes.",
+      "commonMistakes": [
+        "Using SO for per-instance mutable runtime state carelessly",
+        "Treating SO as a replacement for all Prefabs"
+      ],
+      "followUps": [
+        "How do SO assets behave in builds vs Editor?",
+        "What is a runtime-created ScriptableObject used for?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "ScriptableObject",
+        "data"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_scriptable_02",
+      "topicId": "scriptable",
+      "prompt": "Describe the ScriptableObject event channel pattern and its risks.",
+      "interviewerIntent": "Decoupling pattern literacy.",
+      "idealAnswer": "A channel asset raises/listens to events across systems without hard references. Benefits: loose coupling, easy Inspector wiring. Risks: hidden dependencies, lifetime bugs if listeners do not unsubscribe, harder static analysis. Mitigate with clear ownership and Editor tools.",
+      "commonMistakes": [
+        "Never unsubscribing",
+        "One global GodEvent channel for everything"
+      ],
+      "followUps": [
+        "How do you test event channels?",
+        "Compare with C# interfaces and message buses."
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "events",
+        "decoupling"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_scriptable_03",
+      "topicId": "scriptable",
+      "prompt": "How should mutable runtime state interact with ScriptableObject shared assets?",
+      "interviewerIntent": "Avoid data corruption across play sessions.",
+      "idealAnswer": "Prefer immutable config SOs; keep runtime mutable state in instances, player profile, or runtime-created SO copies. Avoid writing into shared assets during Play Mode unless intentional and reset-safe.",
+      "commonMistakes": [
+        "Incrementing shared SO health assets at runtime and committing dirty assets",
+        "Assuming Play Mode changes never persist in Editor"
+      ],
+      "followUps": [
+        "How do you clone SO data for unique enemies?",
+        "Addressables and SO reference integrity?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "runtime state",
+        "authoring"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_scriptable_04",
+      "topicId": "scriptable",
+      "prompt": "When is a ScriptableObject better than JSON for game tuning?",
+      "interviewerIntent": "Tooling trade-offs.",
+      "idealAnswer": "SO wins when designers need Inspector UX, references to Unity objects, and asset database workflows. JSON/CSV wins for bulk tables, external pipelines, and live ops. Many teams author SO in Editor and export/import JSON for CI diffs.",
+      "commonMistakes": [
+        "Claiming JSON is always superior for Unity",
+        "Ignoring merge conflicts on YAML assets"
+      ],
+      "followUps": [
+        "How do you review SO changes in pull requests?",
+        "Hybrid approaches?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "tooling",
+        "pipeline"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_addressables_01",
+      "topicId": "addressables",
+      "prompt": "Explain why a team might migrate from Resources to Addressables.",
+      "interviewerIntent": "Content delivery maturity.",
+      "idealAnswer": "Resources packs listed assets into builds and loads synchronously by path, which scales poorly. Addressables provide async loading, remote catalogs, reference counting, and better memory control for DLC/live content.",
+      "commonMistakes": [
+        "Using Addressables but still sync WaitForCompletion everywhere on main thread without need",
+        "Ignoring reference release"
+      ],
+      "followUps": [
+        "What is an Addressables label vs address?",
+        "How do catalog updates work?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "Addressables",
+        "Resources"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_addressables_02",
+      "topicId": "addressables",
+      "prompt": "How do you avoid memory leaks with Addressables handles?",
+      "interviewerIntent": "Reference management.",
+      "idealAnswer": "Track AsyncOperationHandle lifetimes, release when consumers dispose, prefer Addressables.InstantiateAsync paired with ReleaseInstance, and avoid duplicating loads without sharing. Profile with Addressables Event Viewer.",
+      "commonMistakes": [
+        "Fire-and-forget LoadAssetAsync without storing handles",
+        "Releasing too early while instances still exist"
+      ],
+      "followUps": [
+        "Addressables.LoadAssetsAsync fan-out patterns?",
+        "Scene loading via Addressables vs SceneManager?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 150,
+      "tags": [
+        "handles",
+        "memory"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_addressables_03",
+      "topicId": "addressables",
+      "prompt": "Design an update strategy for remote Addressables on a mobile title with poor connectivity.",
+      "interviewerIntent": "Live ops resilience.",
+      "idealAnswer": "Ship a playable onboard catalog, check for catalog updates opportunistically, download prioritized groups with retries/backoff, allow offline play on cached content, and surface clear UX for required vs optional updates. Verify hashes and handle partial failures.",
+      "commonMistakes": [
+        "Blocking app start until all remote assets download",
+        "No versioning strategy for breaking content"
+      ],
+      "followUps": [
+        "How do you stage content between environments?",
+        "What goes local vs remote?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "mobile",
+        "remote content"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_bundles_01",
+      "topicId": "bundles",
+      "prompt": "What problem do Asset Bundles solve historically, and how do Addressables relate?",
+      "interviewerIntent": "Historical + modern pipeline awareness.",
+      "idealAnswer": "Asset Bundles package assets for runtime loading/download. They require manual dependency and lifecycle management. Addressables build on bundles with higher-level APIs for catalogs, refs, and builds.",
+      "commonMistakes": [
+        "Equating bundles with Prefabs",
+        "Ignoring dependency bundles"
+      ],
+      "followUps": [
+        "What is a manifest?",
+        "Why hash names for caches?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "bundles",
+        "dependencies"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_bundles_02",
+      "topicId": "bundles",
+      "prompt": "How do you prevent duplicate asset inclusion across bundles?",
+      "interviewerIntent": "Build hygiene.",
+      "idealAnswer": "Analyze dependencies, use shared bundles for common materials/shaders, enforce labeling rules, and validate build layouts. Duplicates inflate download size and can duplicate instances in memory if mismanaged.",
+      "commonMistakes": [
+        "Putting everything in one giant bundle",
+        "No shared group for common fonts/shaders"
+      ],
+      "followUps": [
+        "How do you detect duplicates in CI?",
+        "Impact on shader variants?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 150,
+      "tags": [
+        "build",
+        "size"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_bundles_03",
+      "topicId": "bundles",
+      "prompt": "Describe unloading strategies for bundle-backed content.",
+      "interviewerIntent": "Memory management.",
+      "idealAnswer": "Unload unused assets carefully\u2014bundle unload with true may destroy loaded objects. Prefer refcounts (Addressables) and scene isolation. Avoid Resources.UnloadUnusedAssets spam; call intentionally after major transitions.",
+      "commonMistakes": [
+        "Unloading while references remain",
+        "Never unloading on low-memory mobile devices"
+      ],
+      "followUps": [
+        "OnLowMemory callbacks?",
+        "Scene additive unload patterns?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "unload",
+        "memory"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_rendering_01",
+      "topicId": "rendering",
+      "prompt": "What is a draw call, and why do mobiles care?",
+      "interviewerIntent": "Rendering fundamentals.",
+      "idealAnswer": "A draw call is a CPU-to-GPU submission to draw a set of geometry with a given state. Too many calls stress CPU and drivers on mobile. Reduce via batching, GPU instancing, atlasing, and simpler materials.",
+      "commonMistakes": [
+        "Confusing triangles with draw calls only",
+        "Enabling GPU instancing without shared matrices setup"
+      ],
+      "followUps": [
+        "Static vs dynamic batching trade-offs?",
+        "What is SRP Batcher?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "draw calls",
+        "mobile"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_rendering_02",
+      "topicId": "rendering",
+      "prompt": "How do you approach overdraw problems in a particle-heavy game?",
+      "interviewerIntent": "GPU cost literacy.",
+      "idealAnswer": "Profile with Frame Debugger/overdraw views, reduce fill rate via smaller particles, opacity clipping, cheaper shaders, occlusion, and limiting screen coverage. Prefer opaque where possible; soft alpha is expensive on tile GPUs.",
+      "commonMistakes": [
+        "Only lowering particle count without checking fill rate",
+        "Huge fullscreen distortions stacked"
+      ],
+      "followUps": [
+        "Tile-based GPU implications?",
+        "How do you budget opaque vs transparent?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "overdraw",
+        "particles"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_rendering_03",
+      "topicId": "rendering",
+      "prompt": "Explain lightmapping versus realtime lights for a mid-range Android SKU.",
+      "interviewerIntent": "Lighting strategy.",
+      "idealAnswer": "Baked lighting shifts cost offline and stabilizes look for static scenes; realtime lights add flexibility and cost. Mixed lighting is common. For mid-range Android, limit realtime lights, prefer baked GI/probes, and avoid excessive shadow-casting lights.",
+      "commonMistakes": [
+        "Unlimited realtime pixel lights",
+        "Ignoring light probe coverage for dynamic objects"
+      ],
+      "followUps": [
+        "Shadow cascades on mobile?",
+        "What breaks when you mark objects static incorrectly?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "lightmap",
+        "Android"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_rendering_04",
+      "topicId": "rendering",
+      "prompt": "A frame Debugger shows unexpected material breaking batches. How do you investigate?",
+      "interviewerIntent": "Senior rendering debugging.",
+      "idealAnswer": "Check material instance uniqueness, property blocks misuse, shader keywords variants, different scales interrupting static batching, and renderer priorities. Stabilize shared materials, prefer MaterialPropertyBlock carefully, and reduce keyword permutations.",
+      "commonMistakes": [
+        "Cloning materials at runtime casually",
+        "Spamming EnableKeyword"
+      ],
+      "followUps": [
+        "SRP Batcher compatibility checks?",
+        "How do GPU instancing and MPB interact?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "batching",
+        "materials"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_srp_01",
+      "topicId": "srp",
+      "prompt": "How do you decide between Built-in, URP, and HDRP for a new project?",
+      "interviewerIntent": "Pipeline selection judgment.",
+      "idealAnswer": "Built-in is legacy for older projects. URP targets scalable multi-platform/mobile with predictable features. HDRP targets high-end PC/console cinematic fidelity with heavier cost. Choose by target devices, team expertise, and feature needs\u2014not marketing names.",
+      "commonMistakes": [
+        "Choosing HDRP for a casual phone game",
+        "Assuming URP is always a free upgrade without migration cost"
+      ],
+      "followUps": [
+        "What is a Renderer Feature in URP?",
+        "Migration risks from Built-in?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "URP",
+        "HDRP"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_srp_02",
+      "topicId": "srp",
+      "prompt": "What is the SRP Batcher and what breaks its efficiency?",
+      "interviewerIntent": "URP performance literacy.",
+      "idealAnswer": "SRP Batcher reduces CPU cost by caching persistent material data between draw calls with compatible shaders. Efficiency breaks with incompatible shaders, material changes that break batches, or non-compliant properties. Keep shaders SRP Batcher compatible and minimize per-object material mutations.",
+      "commonMistakes": [
+        "Expecting SRP Batcher to fix overdraw",
+        "Constantly swapping materials per frame"
+      ],
+      "followUps": [
+        "How do you verify batcher compatibility?",
+        "Relation to GPU instancing?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "SRP Batcher",
+        "CPU"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_srp_03",
+      "topicId": "srp",
+      "prompt": "Design a URP Renderer Feature for a full-screen damage vignette without forking the pipeline asset carelessly.",
+      "interviewerIntent": "Extensibility without chaos.",
+      "idealAnswer": "Implement a Renderer Feature/pass that injects at the right event, uses a lightweight blit/shader, and is toggled via volume/settings. Keep feature configurable per renderer quality tier. Avoid copying entire URP packages if a feature/pass suffices.",
+      "commonMistakes": [
+        "Forking URP package for tiny effect",
+        "Running expensive blits at full res always on mobile"
+      ],
+      "followUps": [
+        "How do you scale this across quality levels?",
+        "Volume framework integration?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "Renderer Feature",
+        "post FX"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_dots_01",
+      "topicId": "dots",
+      "prompt": "In plain language, what problem is ECS/DOTS trying to solve?",
+      "interviewerIntent": "Conceptual clarity without buzzwords.",
+      "idealAnswer": "DOTS/ECS organizes data in contiguous components processed by systems, improving cache locality and enabling Jobs/Burst parallelization for large entity counts. It trades familiar OOP workflows for data-oriented design and tooling complexity.",
+      "commonMistakes": [
+        "Saying DOTS replaces all MonoBehaviours tomorrow for every game",
+        "Ignoring authoring/tooling costs"
+      ],
+      "followUps": [
+        "When is MonoBehaviour still the better default?",
+        "What is a chunk in ECS?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "ECS",
+        "performance"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_dots_02",
+      "topicId": "dots",
+      "prompt": "How do hybrid GameObject and ECS worlds typically cooperate?",
+      "interviewerIntent": "Practical hybrid knowledge.",
+      "idealAnswer": "Many projects keep presentation/authoring in GameObjects and simulation in ECS, or use companion links. Clear ownership boundaries matter: which side is authoritative for transforms, and how conversion/baking works. Hybrid is a bridge, not an excuse for duplicated state.",
+      "commonMistakes": [
+        "Duplicating state in both worlds without sync rules",
+        "Calling main-thread only APIs inside Burst jobs"
+      ],
+      "followUps": [
+        "Baking vs runtime conversion history?",
+        "How do you debug entity data?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 150,
+      "tags": [
+        "hybrid",
+        "baking"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_dots_03",
+      "topicId": "dots",
+      "prompt": "What makes a job Burst-compatible, and what breaks Burst?",
+      "interviewerIntent": "Jobs/Burst literacy.",
+      "idealAnswer": "Burst prefers unmanaged, blittable data, no managed references, and deterministic math. Managed objects, virtual calls, and unsupported APIs break or restrict Burst. Structure data in NativeArrays/components and keep systems side-effect aware.",
+      "commonMistakes": [
+        "Capturing MonoBehaviour references in jobs",
+        "Assuming all C# is Burst-able"
+      ],
+      "followUps": [
+        "Schedule vs ScheduleParallel safety?",
+        "How do you detect race conditions with NativeContainers?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "Burst",
+        "Jobs"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_multiplayer_01",
+      "topicId": "multiplayer",
+      "prompt": "Explain authority in a multiplayer Unity game.",
+      "interviewerIntent": "Networking fundamentals.",
+      "idealAnswer": "Authority defines which peer may legally mutate state\u2014often server/host authoritative for combat and inventory. Clients predict locally for responsiveness but reconcile with authoritative updates. Misplaced authority causes cheating and desync.",
+      "commonMistakes": [
+        "Trusting clients for currency/inventory without validation",
+        "No reconciliation plan"
+      ],
+      "followUps": [
+        "Client-server vs peer-hosted trade-offs?",
+        "What is server rewind used for?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "authority",
+        "netcode"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_multiplayer_02",
+      "topicId": "multiplayer",
+      "prompt": "How would you network a player transform for a fast-paced action game?",
+      "interviewerIntent": "Replication strategy.",
+      "idealAnswer": "Send quantized state at a controlled rate, use interpolation/extrapolation buffers on remotes, predict local pawn, and reconcile snapshots. Prefer interest management to limit traffic. Avoid Rigidbody physics authority fights without a deterministic plan.",
+      "commonMistakes": [
+        "Syncing every transform every frame unreliably",
+        "Using TCP assumptions on UDP nets"
+      ],
+      "followUps": [
+        "Snapshot interpolation delay trade-offs?",
+        "How do you handle teleports?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 150,
+      "tags": [
+        "interpolation",
+        "prediction"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_multiplayer_03",
+      "topicId": "multiplayer",
+      "prompt": "Compare relay/host models for a mobile co-op title.",
+      "interviewerIntent": "Architecture & business constraints.",
+      "idealAnswer": "Player-hosted is cheaper but fragile to host migration/NAT. Dedicated servers cost more but improve fairness/stability. Relays help connectivity. Choose based on genre competitiveness, budget, and platform services (including Apple network expectations).",
+      "commonMistakes": [
+        "Ignoring host migration",
+        "Assuming all mobile networks allow easy P2P"
+      ],
+      "followUps": [
+        "How do you test netcode offline?",
+        "What state must migrate on host change?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "mobile",
+        "topology"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_mobile_01",
+      "topicId": "mobile",
+      "prompt": "List the first five budgets you set for a Unity mobile game.",
+      "interviewerIntent": "Production-minded optimization.",
+      "idealAnswer": "Typical budgets: frame time (e.g., 16.6/33ms), draw calls, triangles, texture memory, audio voices, and occasionally shader variants / fill rate. Budgets differ by tier (low/mid/high). Measure on real devices early.",
+      "commonMistakes": [
+        "Optimizing only the Editor Game view",
+        "No low-end device in the test plan"
+      ],
+      "followUps": [
+        "How do thermal throttling change budgets mid-session?",
+        "What metrics belong on a CI soak test?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "budgets",
+        "devices"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_mobile_02",
+      "topicId": "mobile",
+      "prompt": "How do you reduce memory warnings on iOS?",
+      "interviewerIntent": "Platform-specific memory craft.",
+      "idealAnswer": "Atlas textures, compress appropriately (ASTC), stream Addressables, unload unused scenes/bundles, avoid hidden duplicated assets, watch Font/TMP atlas growth, and respond to memory warnings by shedding caches. Profile with Xcode + Unity Memory Profiler.",
+      "commonMistakes": [
+        "Using uncompressed textures everywhere",
+        "Ignoring AssetBundle duplicates"
+      ],
+      "followUps": [
+        "Mipmaps memory trade-offs?",
+        "How do you handle large screenshots/readbacks?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "iOS",
+        "memory"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_mobile_03",
+      "topicId": "mobile",
+      "prompt": "What is texture streaming / mip streaming and when does it help?",
+      "interviewerIntent": "Streaming systems.",
+      "idealAnswer": "Mip streaming keeps only needed mip levels resident based on screen size, reducing texture memory. Helps open-world/high-res content. Requires careful bias settings to avoid blur pop-in and must be tested on device.",
+      "commonMistakes": [
+        "Enabling streaming without setting budgets",
+        "Expecting it to fix CPU draw call issues"
+      ],
+      "followUps": [
+        "How do you debug overly blurry mips?",
+        "Interaction with Addressables?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "mip streaming",
+        "textures"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_mobile_04",
+      "topicId": "mobile",
+      "prompt": "A device drops from 60 to 30 FPS after 10 minutes. How do you diagnose?",
+      "interviewerIntent": "Thermal and sustained performance.",
+      "idealAnswer": "Suspect thermal throttling, memory growth/GC spikes, battery saver, or escalating systems (AI/pathing). Capture long Profiler sessions, track temperature if possible, inspect managed heap growth, and verify quality settings adapt under sustained load.",
+      "commonMistakes": [
+        "Only looking at first 30 seconds of play",
+        "Ignoring GC.Alloc graphs"
+      ],
+      "followUps": [
+        "How do you design dynamic quality scaling?",
+        "What Unity Profiler markers matter most?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "thermals",
+        "profiling"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_build_01",
+      "topicId": "build",
+      "prompt": "What belongs in Player Settings reviews before an iOS submission?",
+      "interviewerIntent": "Release checklist literacy.",
+      "idealAnswer": "Bundle id, version/build numbers, icons/splash, orientations, minimum OS, encryption/export compliance answers, capabilities, IL2CPP/ARM64, managed stripping level, and privacy usage strings if needed. Also verify scripting defines for release.",
+      "commonMistakes": [
+        "Shipping Development builds to App Store",
+        "Mismatched versioning between Unity and Xcode"
+      ],
+      "followUps": [
+        "IL2CPP vs Mono for iOS?",
+        "How do you manage multiple environments?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "iOS",
+        "Player Settings"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_build_02",
+      "topicId": "build",
+      "prompt": "How would you structure CI for Unity builds?",
+      "interviewerIntent": "Pipeline thinking.",
+      "idealAnswer": "Use batchmode Unity on agents, cache Library carefully, run EditMode tests first, build players with deterministic versions, store artifacts, and optionally run smoke tests on devices. Keep secrets in CI vaults; pin Editor versions.",
+      "commonMistakes": [
+        "Checking Library into git",
+        "No test gate before build"
+      ],
+      "followUps": [
+        "How do you handle license activation in CI?",
+        "Addressables build as a separate step?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "CI",
+        "batchmode"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_build_03",
+      "topicId": "build",
+      "prompt": "What is managed code stripping and how do you prevent over-stripping issues?",
+      "interviewerIntent": "IL2CPP reality.",
+      "idealAnswer": "Stripping removes unused managed code to shrink builds but may remove reflected code paths. Preserve with link.xml, [Preserve], or quieter reflection patterns. Test release builds, not only Editor.",
+      "commonMistakes": [
+        "Disabling stripping always without size analysis",
+        "Only testing Debug builds"
+      ],
+      "followUps": [
+        "How do you diagnose MissingMethodException after stripping?",
+        "Impact on JSON serializers?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "stripping",
+        "IL2CPP"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_csharp_01",
+      "topicId": "csharp",
+      "prompt": "Explain value types vs reference types with a Unity gameplay example.",
+      "interviewerIntent": "Language fundamentals.",
+      "idealAnswer": "Structs (value types) copy by value\u2014good for small data like DamageInfo. Classes (reference types) share identity\u2014good for behaviors/services. Misusing large structs or mutable struct properties causes subtle bugs.",
+      "commonMistakes": [
+        "Always using classes for everything",
+        "Huge structs copied per frame carelessly"
+      ],
+      "followUps": [
+        "Why immutable structs help?",
+        "Boxing costs?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "structs",
+        "classes"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_csharp_02",
+      "topicId": "csharp",
+      "prompt": "Where do GC allocations commonly hide in Unity C# gameplay code?",
+      "interviewerIntent": "GC awareness.",
+      "idealAnswer": "string concatenation, LINQ in hot paths, boxing, closures allocating, foreach over some collections in older patterns, and Unity APIs returning arrays. Use profilers, object pools, non-alloc physics queries, and StringBuilder carefully.",
+      "commonMistakes": [
+        "Ignoring GC.Alloc because FPS seems fine in Editor",
+        "new List every Update"
+      ],
+      "followUps": [
+        "NonAlloc raycast APIs?",
+        "Span/NativeArray alternatives?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "GC",
+        "performance"
+      ],
+      "codeSnippet": "void Update(){ var hits = Physics.RaycastAll(ray); } // allocates"
+    },
+    {
+      "id": "q_csharp_03",
+      "topicId": "csharp",
+      "prompt": "How do async/await and Unity's main thread interact?",
+      "interviewerIntent": "Concurrency literacy.",
+      "idealAnswer": "Unity API calls generally must run on the main thread. async/await can still hop contexts; use Unity-friendly awaiters/UniTask and explicit switching back to main thread before touching Engine objects. Cancel tasks on destroy.",
+      "commonMistakes": [
+        "Fire-and-forget async void everywhere",
+        "Touching Transforms off-thread"
+      ],
+      "followUps": [
+        "How do you cancel on OnDestroy?",
+        "Compare coroutines vs async."
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "async",
+        "main thread"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_csharp_04",
+      "topicId": "csharp",
+      "prompt": "What are useful C# features for cleaner Unity APIs (recent language versions)?",
+      "interviewerIntent": "Modern C# taste.",
+      "idealAnswer": "Discuss pattern matching, nullable reference types, records for immutable DTOs, switch expressions, and readonly struct. Tie answers to readability and safety, not novelty.",
+      "commonMistakes": [
+        "Using every new feature without team conventions",
+        "Records for mutable MonoBehaviours"
+      ],
+      "followUps": [
+        "How do nullable reference types help serialized fields?",
+        "Interfaces vs abstract classes in Unity?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "language",
+        "style"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_oop_01",
+      "topicId": "oop",
+      "prompt": "How do encapsulation and Unity's Inspector serialization interact?",
+      "interviewerIntent": "OOP in Unity context.",
+      "idealAnswer": "Encapsulation wants private fields; Unity serializes [SerializeField] private fields so designers can configure without public mutability. Expose controlled APIs for runtime changes rather than public fields.",
+      "commonMistakes": [
+        "Making everything public for Inspector convenience",
+        "Hiding data with no Inspector access when designers need it"
+      ],
+      "followUps": [
+        "What does [HideInInspector] solve?",
+        "Property backing fields patterns?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "serialization",
+        "encapsulation"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_oop_02",
+      "topicId": "oop",
+      "prompt": "Inheritance vs composition for enemy behaviors\u2014what do you choose and why?",
+      "interviewerIntent": "Design judgment.",
+      "idealAnswer": "Prefer composition (components/strategies/ScriptableObject behaviors) for mix-and-match abilities. Use shallow inheritance for clear is-a relationships. Deep hierarchies become brittle in Unity Prefab workflows.",
+      "commonMistakes": [
+        "10-level EnemyBase trees",
+        "Duplicating code across unrelated components with no shared services"
+      ],
+      "followUps": [
+        "Strategy pattern in Unity?",
+        "How do Prefab variants interact with inheritance?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "composition",
+        "inheritance"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_oop_03",
+      "topicId": "oop",
+      "prompt": "How do SOLID principles show up in Unity UI and gameplay systems?",
+      "interviewerIntent": "Applied SOLID.",
+      "idealAnswer": "Give concrete mappings: single responsibility per component, open-closed via Strategy/SO configs, interface segregation for interactions, dependency inversion via injected references/services. Avoid abstract dogma\u2014show trade-offs with serialization and performance.",
+      "commonMistakes": [
+        "Reciting SOLID without Unity examples",
+        "Over-abstracting tiny scripts"
+      ],
+      "followUps": [
+        "Which SOLID principle is most often violated in GameManagers?",
+        "How do you keep DI friendly with MonoBehaviours?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "SOLID",
+        "architecture"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_patterns_01",
+      "topicId": "patterns",
+      "prompt": "Describe a practical Observer/event approach in Unity.",
+      "interviewerIntent": "Pattern practicality.",
+      "idealAnswer": "C# events, UnityEvents, or ScriptableObject channels notify listeners of state changes (health changed, quest updated). Prefer explicit unsubscribe and typed payloads. Avoid SendMessage.",
+      "commonMistakes": [
+        "Global static events never cleared",
+        "Stringly-typed messages"
+      ],
+      "followUps": [
+        "Push vs pull updates?",
+        "How do you debug event storms?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "observer",
+        "events"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_patterns_02",
+      "topicId": "patterns",
+      "prompt": "How do you implement a State Machine for character stance without a giant switch in Update?",
+      "interviewerIntent": "State pattern.",
+      "idealAnswer": "Use polymorphic state objects or Animator + code states. Each state handles enter/update/exit. A context holds shared data. This localizes transitions and simplifies testing.",
+      "commonMistakes": [
+        "Boolean spaghetti (isJumping && !isAttacking && ...)",
+        "States allocated every frame"
+      ],
+      "followUps": [
+        "How do hierarchical HFSM differ?",
+        "When is Animator alone enough?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "state machine",
+        "AI"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_patterns_03",
+      "topicId": "patterns",
+      "prompt": "Explain Object Pooling and when not to use it.",
+      "interviewerIntent": "Pooling judgment.",
+      "idealAnswer": "Pooling reuses instances to avoid Instantiate/Destroy spikes. Use for frequent short-lived objects (projectiles, VFX). Skip for rare heavy objects where complexity exceeds benefit. Reset state carefully on release/checkout.",
+      "commonMistakes": [
+        "Pooling without resetting state",
+        "Pooling everything including unique bosses"
+      ],
+      "followUps": [
+        "How do Addressables interact with pools?",
+        "Thread safety considerations?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "pool",
+        "GC"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_patterns_04",
+      "topicId": "patterns",
+      "prompt": "Compare Singleton, Service Locator, and Dependency Injection for Unity managers.",
+      "interviewerIntent": "Architecture trade-offs.",
+      "idealAnswer": "Singleton is simple but hides dependencies and complicates tests. Service locator centralizes lookup with similar smells. DI makes dependencies explicit and testable but needs careful MonoBehaviour integration. Many Unity projects use a pragmatic mix with a composition root/bootstrap.",
+      "commonMistakes": [
+        "Singleton GameManager that owns all systems",
+        "Full DI framework without team buy-in"
+      ],
+      "followUps": [
+        "How do you replace services in tests?",
+        "Scene-based composition roots?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 150,
+      "tags": [
+        "DI",
+        "singleton"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_patterns_05",
+      "topicId": "patterns",
+      "prompt": "What is a Command pattern use case in a Unity inventory/editor tool?",
+      "interviewerIntent": "Undo/redo and input.",
+      "idealAnswer": "Commands encapsulate operations (equip item, place tile) with execute/undo, enabling replay and editor undo stacks. Useful for tools and some gameplay input remapping.",
+      "commonMistakes": [
+        "Commands that mutate global state invisibly",
+        "No idempotent undo"
+      ],
+      "followUps": [
+        "How do you serialize commands for demos/replays?",
+        "Networking with commands?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "command",
+        "undo"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_algorithms_01",
+      "topicId": "algorithms",
+      "prompt": "How would you detect the closest enemy within radius efficiently for 500 agents?",
+      "interviewerIntent": "Algorithmic scaling.",
+      "idealAnswer": "Naive all-pairs is O(n^2). Use spatial partitioning (grid/quadtree), layer masks, OverlapSphereNonAlloc, or ECS spatial structures. Update interest infrequently when possible.",
+      "commonMistakes": [
+        "Physics.OverlapSphere allocating each time per agent per frame",
+        "No broadphase"
+      ],
+      "followUps": [
+        "How do you tune grid cell size?",
+        "Jobifying distance checks?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "spatial hash",
+        "AI"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_algorithms_02",
+      "topicId": "algorithms",
+      "prompt": "Outline path smoothing after A* on a grid.",
+      "interviewerIntent": "Gameplay algorithms.",
+      "idealAnswer": "Use string pulling/funnel algorithms, line-of-sight shortcuts, or corner cutting rules respecting agent radius. Keep LOS checks cheap via grid visibility or raycasts with caps.",
+      "commonMistakes": [
+        "Removing all waypoints blindly",
+        "Ignoring collider radius"
+      ],
+      "followUps": [
+        "Any-angle pathfinding alternatives?",
+        "How do you repath partially?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "A*",
+        "smoothing"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_algorithms_03",
+      "topicId": "algorithms",
+      "prompt": "How do you schedule periodic AI updates to avoid spikes?",
+      "interviewerIntent": "Time-slicing.",
+      "idealAnswer": "Stagger updates with phase offsets, priority queues, and LOD AI frequencies by distance. Budget milliseconds per frame and carry work across frames. Profile worst-case stacks of agents.",
+      "commonMistakes": [
+        "All AI Think() on the same frame",
+        "Fixed 0.0 interval timers aligned accidentally"
+      ],
+      "followUps": [
+        "Utility AI vs behavior trees cost profiles?",
+        "Jobifying perception?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 150,
+      "tags": [
+        "time slicing",
+        "AI LOD"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_algorithms_04",
+      "topicId": "algorithms",
+      "prompt": "Explain deterministic vs non-deterministic simulation implications for lockstep multiplayer.",
+      "interviewerIntent": "Determinism awareness.",
+      "idealAnswer": "Lockstep requires deterministic simulation across platforms\u2014careful with floats, random seeds, and physics. Many Unity games avoid strict lockstep and use state sync instead because engine determinism is hard.",
+      "commonMistakes": [
+        "Assuming float math is identical everywhere",
+        "Using Unity physics as-is for competitive lockstep without proof"
+      ],
+      "followUps": [
+        "FixedPoint approaches?",
+        "Why rollback netcode often still quantizes state?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "determinism",
+        "netcode"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_datastruct_01",
+      "topicId": "datastruct",
+      "prompt": "When do you choose List, array, HashSet, or Dictionary in gameplay code?",
+      "interviewerIntent": "Collections judgment.",
+      "idealAnswer": "Arrays/Lists for ordered dense data; HashSet for membership; Dictionary for keyed lookups. Consider GC, cache locality, and predictability. Preallocate capacity for hot lists.",
+      "commonMistakes": [
+        "new Dictionary in Update",
+        "Using List.Contains heavily instead of HashSet"
+      ],
+      "followUps": [
+        "Sorted structures when needed?",
+        "Concurrent collections on main thread?"
+      ],
+      "difficulty": 1,
+      "estimatedSeconds": 90,
+      "tags": [
+        "collections",
+        "GC"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_datastruct_02",
+      "topicId": "datastruct",
+      "prompt": "Why might a Queue be preferable for damage popups or AI orders?",
+      "interviewerIntent": "Practical structure selection.",
+      "idealAnswer": "Queues provide FIFO processing for delayed/ordered work. Useful for command buffers, toast messages, and deferred spawn requests. Circular buffers help fixed capacity without GC.",
+      "commonMistakes": [
+        "List.RemoveAt(0) for queue behavior",
+        "Unbounded queues that never drain"
+      ],
+      "followUps": [
+        "How do you implement a ring buffer?",
+        "Priority queues for ordered AI events?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 120,
+      "tags": [
+        "queue",
+        "deferred work"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_datastruct_03",
+      "topicId": "datastruct",
+      "prompt": "How do NativeArray and managed arrays differ for Unity Jobs?",
+      "interviewerIntent": "Native containers literacy.",
+      "idealAnswer": "NativeArray lives in unmanaged memory, usable in Burst/Jobs with explicit lifetime (Allocator) and safety handles. Managed arrays are GC memory and not Burst-friendly. Dispose NativeArrays to avoid leaks.",
+      "commonMistakes": [
+        "Allocator.Persistent without Dispose",
+        "Sharing NativeArray unsafely across jobs"
+      ],
+      "followUps": [
+        "Allocator.Temp vs TempJob vs Persistent?",
+        "Safety system exceptions meaning?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "NativeArray",
+        "Jobs"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_datastruct_04",
+      "topicId": "datastruct",
+      "prompt": "Describe a data layout for inventory stacks that stays designer-friendly and code-efficient.",
+      "interviewerIntent": "Data modeling.",
+      "idealAnswer": "Separate static item definitions (SO/id) from runtime slot structs (itemId, count, instanceGuid). Keep hot loops over compact arrays/lists of slots; avoid MonoBehaviour per item. Serialize save data as DTOs.",
+      "commonMistakes": [
+        "GameObject per inventory item always",
+        "Mutating shared definition assets for stack counts"
+      ],
+      "followUps": [
+        "How do you support unique item instances vs stacks?",
+        "Save migration strategies?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "inventory",
+        "DTO"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_basics_05",
+      "topicId": "basics",
+      "prompt": "What is a Scripting Define Symbol useful for in a multi-platform Unity app?",
+      "interviewerIntent": "Build configuration literacy.",
+      "idealAnswer": "Defines toggle code paths per platform/store/feature flag without runtime cost of branching unused systems. Use them for debug cheats, platform services, and stripping optional integrations. Keep a documented matrix.",
+      "commonMistakes": [
+        "Secretly leaving CHEATS enabled in release",
+        "Proliferation of undocumented defines"
+      ],
+      "followUps": [
+        "How do you set defines in CI?",
+        "Difference between Player Settings and asmdef versionDefines?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "defines",
+        "platforms"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_animation_04",
+      "topicId": "animation",
+      "prompt": "How do Playable Graphs help dynamic animation beyond Animator Controllers?",
+      "interviewerIntent": "Advanced animation.",
+      "idealAnswer": "Playables compose clips/mixers in code for runtime graphs\u2014useful for procedural additive layers, dynamic cutscenes, or tooling. They require manual graph lifecycle management and disposal.",
+      "commonMistakes": [
+        "Leaking PlayableGraphs",
+        "Rebuilding graphs every frame unnecessarily"
+      ],
+      "followUps": [
+        "AnimationScriptPlayable uses?",
+        "Mixing with Animator controllers?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "Playables",
+        "graphs"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_ui_05",
+      "topicId": "ui",
+      "prompt": "How would you migrate a complex uGUI HUD toward UI Toolkit incrementally?",
+      "interviewerIntent": "Migration judgment.",
+      "idealAnswer": "Migrate screen-by-screen: start with static menus, keep gameplay HUD last, share design tokens, and bridge events through the same app services. Measure performance and input parity. Avoid big-bang rewrites mid-production.",
+      "commonMistakes": [
+        "Rewriting all UI mid-crunch",
+        "Duplicating business logic in both systems"
+      ],
+      "followUps": [
+        "USS theming strategies?",
+        "Custom controls vs uGUI Prefabs?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "UI Toolkit",
+        "migration"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_addressables_04",
+      "topicId": "addressables",
+      "prompt": "What is the difference between Addressables groups Local and Remote?",
+      "interviewerIntent": "Catalog packing.",
+      "idealAnswer": "Local groups ship with the player; remote groups download on demand. Paths, compression, and update cadence differ. Critical boot content should be local; cosmetics/maps often remote.",
+      "commonMistakes": [
+        "Making tutorial-critical assets remote-only without caching strategy",
+        "One remote group for everything"
+      ],
+      "followUps": [
+        "How do you handle version skew between app binary and content?",
+        "Hosting options?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "groups",
+        "remote"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_multiplayer_04",
+      "topicId": "multiplayer",
+      "prompt": "What interest management strategies reduce bandwidth?",
+      "interviewerIntent": "Scale thinking.",
+      "idealAnswer": "Only replicate entities relevant to a player\u2014spatial grids, zones, visibility sets, and LOD net rates. Prioritize critical channels. Mobile networks benefit greatly from reduced chatter.",
+      "commonMistakes": [
+        "Replicating all world entities to all clients",
+        "No send-rate tiers"
+      ],
+      "followUps": [
+        "How do you hide cheaters abusing interest gaps?",
+        "AOI grid sizing?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "AOI",
+        "bandwidth"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_build_04",
+      "topicId": "build",
+      "prompt": "How do you approach App Store Guideline 4.3 risk as an engineering lead for a content app?",
+      "interviewerIntent": "Product+engineering awareness (relevant to this app!).",
+      "idealAnswer": "Differentiate with unique workflows, offline adaptive learning, polished native UX, original content, and clear utility beyond a website wrapper. Avoid template spam clones and trademark misuse. Document review notes and keep meaningful interactivity.",
+      "commonMistakes": [
+        "Shipping thin webviews of generic quizzes",
+        "Copying competitors' UI wholesale"
+      ],
+      "followUps": [
+        "What metrics prove engagement quality?",
+        "How do privacy-first designs help review?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "App Store",
+        "quality"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_csharp_05",
+      "topicId": "csharp",
+      "prompt": "Explain boxing and why it matters in hot Unity loops.",
+      "interviewerIntent": "Low-level GC.",
+      "idealAnswer": "Boxing wraps value types in objects, allocating GC memory. It appears with interface calls on structs, non-generic collections, and some pattern uses. Prefer generic APIs and avoid per-frame boxing.",
+      "commonMistakes": [
+        "Using ArrayList for ints",
+        "Logging that boxes enums heavily in Update"
+      ],
+      "followUps": [
+        "How do you spot boxing in Profiler?",
+        "ref structs limitations?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "boxing",
+        "GC"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_datastruct_05",
+      "topicId": "datastruct",
+      "prompt": "How would you store cooldowns for thousands of abilities efficiently?",
+      "interviewerIntent": "Structure + algorithm.",
+      "idealAnswer": "Use dense arrays keyed by entity/ability indices, or a min-heap/priority queue of next-expiry events instead of scanning all cooldowns each frame. Keep memory contiguous where possible.",
+      "commonMistakes": [
+        "Dictionary lookup per ability per frame for thousands without need",
+        "Updating all cooldowns individually in Update"
+      ],
+      "followUps": [
+        "Sparse sets?",
+        "ECS dynamic buffers approach?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "cooldowns",
+        "heap"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_oop_04",
+      "topicId": "oop",
+      "prompt": "What is the fragile base class problem, and how does it appear in Unity projects?",
+      "interviewerIntent": "OOP pitfalls.",
+      "idealAnswer": "Changes to a base MonoBehaviour unexpectedly break subclasses. In Unity this appears when EnemyBase gains new Update logic that subclasses assumed they controlled. Prefer composition and sealed leaves where sensible.",
+      "commonMistakes": [
+        "Deep Prefab inheritance mirroring deep class inheritance",
+        "Overriding Update without calling base intentionally/unintentionally"
+      ],
+      "followUps": [
+        "How do default interface methods change this?",
+        "Sealing strategies?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "fragile base",
+        "MonoBehaviour"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_patterns_06",
+      "topicId": "patterns",
+      "prompt": "Describe a simple Event Bus and its failure modes.",
+      "interviewerIntent": "Bus pattern caution.",
+      "idealAnswer": "A bus routes messages by type/topic across systems. It decouples publishers/subscribers but can obscure flow, encourage god messages, and leak subscriptions. Mitigate with scoped buses, typed events, and tooling.",
+      "commonMistakes": [
+        "One static bus for all game events forever",
+        "No unsubscribe on destroy"
+      ],
+      "followUps": [
+        "Compare bus vs SO event channels.",
+        "How do you trace a message end-to-end?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "event bus",
+        "decoupling"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_physics_05",
+      "topicId": "physics",
+      "prompt": "What are Layer Collision Matrix and why do interviewers ask about it?",
+      "interviewerIntent": "Filtering literacy.",
+      "idealAnswer": "It configures which layers collide/query each other, reducing cost and preventing unwanted interactions (player vs UI volume, projectile vs ally). Candidates should mention setting layers intentionally and using masks in queries.",
+      "commonMistakes": [
+        "Everything on Default",
+        "Raycasts without masks"
+      ],
+      "followUps": [
+        "Include vs exclude layers in queries?",
+        "Trigger vs collision matrix nuances?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "layers",
+        "matrix"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_lifecycle_05",
+      "topicId": "lifecycle",
+      "prompt": "How do Editor domain reloads affect static state in your systems?",
+      "interviewerIntent": "Editor/runtime maturity.",
+      "idealAnswer": "Domain reloads reset statics when scripts recompile, which can desync singleton assumptions. Use RuntimeInitializeOnLoadMethod, [InitializeOnLoad], and clear static event handlers. Design so Play Mode enters cleanly.",
+      "commonMistakes": [
+        "Static caches never invalidated",
+        "Assuming Player builds behave like Editor domain reload"
+      ],
+      "followUps": [
+        "Enter Play Mode options without reload?",
+        "How do you write regression tests for this?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "domain reload",
+        "statics"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_scriptable_05",
+      "topicId": "scriptable",
+      "prompt": "Design a data-driven quest definition using ScriptableObjects and runtime progress separation.",
+      "interviewerIntent": "System design interview.",
+      "idealAnswer": "QuestDefinition SO holds objectives, rewards, and dialogue refs. Runtime QuestInstance stores progress counters and state in player save data. UI reads instance + definition. This avoids mutating shared assets and supports multiple concurrent quests.",
+      "commonMistakes": [
+        "Writing progress into the SO asset",
+        "MonoBehaviour per quest asset in scene permanently"
+      ],
+      "followUps": [
+        "How do you localize quest text?",
+        "Versioning quest definitions after ship?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "quests",
+        "save data"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_rendering_05",
+      "topicId": "rendering",
+      "prompt": "What is a shader variant explosion and how do you control it?",
+      "interviewerIntent": "Shader pipeline risk.",
+      "idealAnswer": "Keywords create compiled variants that bloat build time/size. Control with stripping, fewer keywords, multi_compile carefully vs shader_feature, and quality-tier shader sets. Always measure player build size.",
+      "commonMistakes": [
+        "Enabling all keywords 'just in case'",
+        "No shader stripping in release"
+      ],
+      "followUps": [
+        "shader_feature vs multi_compile?",
+        "How does URP handle shader stripping?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "shaders",
+        "variants"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_navigation_04",
+      "topicId": "navigation",
+      "prompt": "How do Off Mesh Links / NavMesh Links change agent traversal design?",
+      "interviewerIntent": "Navigation authoring.",
+      "idealAnswer": "They connect disjoint NavMesh surfaces for jumps, ladders, or teleporters. Agents need appropriate area costs and animation hooks when traversing links. Designers place links intentionally rather than expecting automatic parkour.",
+      "commonMistakes": [
+        "Auto-generating noisy links everywhere",
+        "No gameplay state for link traversal animations"
+      ],
+      "followUps": [
+        "Dynamic links at runtime?",
+        "Area costs for stealth paths?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "links",
+        "traversal"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_audio_04",
+      "topicId": "audio",
+      "prompt": "How do you implement accessible volume controls that persist?",
+      "interviewerIntent": "Player settings UX.",
+      "idealAnswer": "Expose Music/SFX/UI volumes via mixer exposed parameters, store in player prefs/profile JSON, apply on boot before first sounds, and provide mute toggles. Respect platform interruptions.",
+      "commonMistakes": [
+        "Only changing AudioListener.volume for everything",
+        "Forgetting to apply saved volumes on cold start"
+      ],
+      "followUps": [
+        "How do you duck audio on phone calls?",
+        "Linear vs logarithmic volume sliders?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "settings",
+        "accessibility"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_gameobject_05",
+      "topicId": "gameobject",
+      "prompt": "How do interfaces + TryGetComponent improve combat interactivity designs?",
+      "interviewerIntent": "Composable interactions.",
+      "idealAnswer": "Objects advertise capabilities (IInteractable, IDamageable). Tracers use TryGetComponent to optionally respond without brittle type switches. This supports mixins via components and safer code than SendMessage.",
+      "commonMistakes": [
+        "GetComponent without null checks",
+        "Downcasting through unrelated base types"
+      ],
+      "followUps": [
+        "Multiple interfaces on one object patterns?",
+        "How do you discover interactables in radius?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "interfaces",
+        "TryGetComponent"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_mobile_05",
+      "topicId": "mobile",
+      "prompt": "Why are opaque materials often cheaper than transparent ones on mobile GPUs?",
+      "interviewerIntent": "Fill-rate & TBDR.",
+      "idealAnswer": "Transparent overdraw stresses fill rate on tile-based GPUs; opaque can use early-z/hidden surface removal more effectively. Prefer alpha cutoff or mesh cuts when possible, and limit screen-space overlapping transparencies.",
+      "commonMistakes": [
+        "Using transparent shaders for all UI particles without budgets",
+        "Disabling z-write carelessly"
+      ],
+      "followUps": [
+        "How do you measure overdraw on device?",
+        "Alpha to coverage uses?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "transparency",
+        "TBDR"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_srp_04",
+      "topicId": "srp",
+      "prompt": "What quality settings would you expose for URP on low/mid/high mobile tiers?",
+      "interviewerIntent": "Scalability design.",
+      "idealAnswer": "Tier resolution scale, shadow distance/cascades, MSAA, additional lights count, post-processing toggles, LOD bias, and soft particles. Drive via URP asset variants or runtime quality levels with a settings UI.",
+      "commonMistakes": [
+        "One URP asset for all devices",
+        "Only a master 'quality' without measurable effects"
+      ],
+      "followUps": [
+        "How do you A/B validate tiers?",
+        "Per-platform default selection?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "quality",
+        "URP"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_dots_04",
+      "topicId": "dots",
+      "prompt": "Give an example system that is a poor first DOTS candidate and why.",
+      "interviewerIntent": "Judicious adoption.",
+      "idealAnswer": "Complex UI flows, one-off cinematic scripting, or sparse gameplay with heavy Editor authoring may cost more in DOTS than they gain. Start DOTS where entity counts and simulation cost dominate (projectiles, crowds).",
+      "commonMistakes": [
+        "Rewriting UI in ECS first",
+        "Ignoring team ramp-up cost"
+      ],
+      "followUps": [
+        "How do you measure ROI of a DOTS migration?",
+        "Hybrid escape hatches?"
+      ],
+      "difficulty": 3,
+      "estimatedSeconds": 120,
+      "tags": [
+        "adoption",
+        "ROI"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_bundles_04",
+      "topicId": "bundles",
+      "prompt": "What is bundle dependency chaining and a failure symptom at runtime?",
+      "interviewerIntent": "Runtime packaging.",
+      "idealAnswer": "Loading an asset may require dependent bundles (materials/shaders/textures). Missing dependency manifests as pink shaders, null assets, or load errors. Always build/load dependency sets together or via Addressables.",
+      "commonMistakes": [
+        "Loading only the prefab bundle and forgetting shared shaders",
+        "No CRC/version checks"
+      ],
+      "followUps": [
+        "How do you visualize dependencies?",
+        "Remote dependency download order?"
+      ],
+      "difficulty": 2,
+      "estimatedSeconds": 100,
+      "tags": [
+        "dependencies",
+        "pink shaders"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_algorithms_05",
+      "topicId": "algorithms",
+      "prompt": "Design an algorithm to pick mock-interview questions weighted by weakness and freshness.",
+      "interviewerIntent": "Ties to this app's logic\u2014great signal.",
+      "idealAnswer": "Assign each question a weight from low recent score, low confidence, and low exposure. Sample without replacement using weighted random selection, optionally enforcing topic diversity constraints. Recalculate weights as the learner improves.",
+      "commonMistakes": [
+        "Uniform random only",
+        "Always picking the single weakest question"
+      ],
+      "followUps": [
+        "How do you prevent starvation of new topics?",
+        "How do you unit-test randomness with a seed?"
+      ],
+      "difficulty": 4,
+      "estimatedSeconds": 150,
+      "tags": [
+        "weighted random",
+        "personalization"
+      ],
+      "codeSnippet": ""
+    }
+  ],
+  "learningPaths": [
+    {
+      "id": "path_beginner",
+      "title": "Unity Beginner",
+      "audience": "Students new to Unity",
+      "description": "Foundation scenes, lifecycle, GameObjects, and C# basics.",
+      "moduleIds": [
+        "les_basics_scenes",
+        "les_lifecycle_order",
+        "les_go_composition",
+        "les_csharp_gc",
+        "les_oop_unity"
+      ],
+      "sortOrder": 1
+    },
+    {
+      "id": "path_junior",
+      "title": "Junior Unity Developer",
+      "audience": "Fresh graduates",
+      "description": "Physics, UI, animation, and patterns used in junior interviews.",
+      "moduleIds": [
+        "les_physics_motion",
+        "les_ui_safearea",
+        "les_anim_states",
+        "les_patterns_core",
+        "les_so_data"
+      ],
+      "sortOrder": 2
+    },
+    {
+      "id": "path_mid",
+      "title": "Mid-Level Unity Developer",
+      "audience": "Developers with shipped features",
+      "description": "Systems design across audio, navigation, data, and builds.",
+      "moduleIds": [
+        "les_nav_basics",
+        "les_audio_mixer",
+        "les_addr_memory",
+        "les_build_ios",
+        "les_ds_collections"
+      ],
+      "sortOrder": 3
+    },
+    {
+      "id": "path_senior",
+      "title": "Senior Unity Developer",
+      "audience": "Seniors owning tech decisions",
+      "description": "Rendering, performance architecture, and advanced tooling.",
+      "moduleIds": [
+        "les_render_mobile",
+        "les_urp_choice",
+        "les_algo_spatial",
+        "les_mistakes_perf",
+        "les_addr_memory"
+      ],
+      "sortOrder": 4
+    },
+    {
+      "id": "path_lead",
+      "title": "Technical Lead",
+      "audience": "Leads & principals",
+      "description": "Pipeline choice, networking authority, CI, and product quality.",
+      "moduleIds": [
+        "les_net_authority",
+        "les_build_ios",
+        "les_urp_choice",
+        "les_dots_when",
+        "les_patterns_core"
+      ],
+      "sortOrder": 5
+    },
+    {
+      "id": "path_mobile",
+      "title": "Mobile Game Developer",
+      "audience": "Mobile specialists",
+      "description": "Budgets, thermals, UI safe areas, and iOS build readiness.",
+      "moduleIds": [
+        "les_mobile_budgets",
+        "les_ui_safearea",
+        "les_render_mobile",
+        "les_build_ios",
+        "les_mistakes_perf"
+      ],
+      "sortOrder": 6
+    },
+    {
+      "id": "path_xr",
+      "title": "AR/VR Developer",
+      "audience": "XR-focused candidates",
+      "description": "Performance, rendering, and interaction-friendly architecture themes applicable to XR interviews.",
+      "moduleIds": [
+        "les_render_mobile",
+        "les_mobile_budgets",
+        "les_lifecycle_order",
+        "les_go_composition",
+        "les_algo_spatial"
+      ],
+      "sortOrder": 7
+    }
+  ],
+  "flashcards": [
+    {
+      "id": "fc_001",
+      "topicId": "basics",
+      "front": "What is a Unity scene?",
+      "back": "A container of GameObjects, lighting, and settings that can be loaded singly or additively.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_002",
+      "topicId": "basics",
+      "front": "Awake vs Start in one sentence?",
+      "back": "Awake initializes the object itself; Start runs after all Awakes and is safer for cross-object setup.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_003",
+      "topicId": "basics",
+      "front": "What does DontDestroyOnLoad do?",
+      "back": "Keeps a root GameObject alive when loading a new single scene.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_004",
+      "topicId": "gameobject",
+      "front": "What must every GameObject have?",
+      "back": "A Transform component.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_005",
+      "topicId": "gameobject",
+      "front": "Why cache GetComponent?",
+      "back": "Repeated lookups cost CPU; cache in Awake/Start.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_006",
+      "topicId": "gameobject",
+      "front": "SetActive(false) vs disabling a Behaviour?",
+      "back": "SetActive disables the whole object; disabling a Behaviour stops only that script.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_007",
+      "topicId": "lifecycle",
+      "front": "Typical first-frame order?",
+      "back": "Awake \u2192 OnEnable \u2192 Start \u2192 FixedUpdate/Update/LateUpdate.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_008",
+      "topicId": "lifecycle",
+      "front": "Can destroyed Unity objects equal null?",
+      "back": "Yes\u2014Unity overrides equality so destroyed objects compare equal to null.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_009",
+      "topicId": "physics",
+      "front": "Where should Rigidbody forces be applied?",
+      "back": "Usually FixedUpdate via Rigidbody APIs.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_010",
+      "topicId": "physics",
+      "front": "Collider without Rigidbody is typically?",
+      "back": "Static (or non-simulated) geometry unless paired for triggers carefully.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_011",
+      "topicId": "ui",
+      "front": "Screen Space Overlay meaning?",
+      "back": "UI draws on top without needing a scene camera.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_012",
+      "topicId": "ui",
+      "front": "Why split canvases?",
+      "back": "To avoid rebuilding static UI when dynamic UI changes.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_013",
+      "topicId": "animation",
+      "front": "Animator Controller purpose?",
+      "back": "Stateful animation graph driven by parameters/transitions.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_014",
+      "topicId": "animation",
+      "front": "Root motion means?",
+      "back": "Animation clip drives character displacement.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_015",
+      "topicId": "navigation",
+      "front": "NavMesh is?",
+      "back": "A walkable mesh abstraction for agents to pathfind.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_016",
+      "topicId": "navigation",
+      "front": "NavMeshObstacle carving does?",
+      "back": "Temporarily modifies walkability around blockers.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_017",
+      "topicId": "audio",
+      "front": "Audio Mixer groups help?",
+      "back": "Organize volumes/effects for Music/SFX/UI and snapshots.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_018",
+      "topicId": "scriptable",
+      "front": "ScriptableObject good for?",
+      "back": "Shared serializable data assets and event channels.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_019",
+      "topicId": "scriptable",
+      "front": "Risk of mutable shared SO state?",
+      "back": "Play Mode changes can leak across sessions/instances.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_020",
+      "topicId": "addressables",
+      "front": "Why prefer Addressables over Resources?",
+      "back": "Async loading, remote content, ref counting, better scalability.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_021",
+      "topicId": "addressables",
+      "front": "What must you release?",
+      "back": "Addressables handles/instances you loaded when done.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_022",
+      "topicId": "bundles",
+      "front": "Pink materials after bundle load often mean?",
+      "back": "Missing shader/material dependency bundles.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_023",
+      "topicId": "rendering",
+      "front": "Draw call is?",
+      "back": "A CPU submission to draw geometry with a GPU state.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_024",
+      "topicId": "rendering",
+      "front": "Overdraw hurts especially?",
+      "back": "Fill rate on mobile GPUs with lots of transparency.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_025",
+      "topicId": "srp",
+      "front": "URP targets?",
+      "back": "Scalable multi-platform rendering including mobile.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_026",
+      "topicId": "srp",
+      "front": "SRP Batcher reduces?",
+      "back": "CPU cost of rendering compatible materials.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_027",
+      "topicId": "dots",
+      "front": "ECS stores data how?",
+      "back": "Components in contiguous chunks processed by systems.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_028",
+      "topicId": "dots",
+      "front": "Burst prefers?",
+      "back": "Unmanaged blittable data without managed references.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_029",
+      "topicId": "multiplayer",
+      "front": "Authority means?",
+      "back": "Who is allowed to legally change game state.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_030",
+      "topicId": "multiplayer",
+      "front": "Interest management reduces?",
+      "back": "Bandwidth by syncing only relevant entities.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_031",
+      "topicId": "mobile",
+      "front": "ASTC helps?",
+      "back": "GPU texture compression to reduce memory/bandwidth on many mobile GPUs.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_032",
+      "topicId": "mobile",
+      "front": "Thermal throttling symptom?",
+      "back": "FPS drops after sustained play as the device cools clocks.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_033",
+      "topicId": "build",
+      "front": "IL2CPP does what?",
+      "back": "Converts IL to C++ for player builds (required on iOS).",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_034",
+      "topicId": "build",
+      "front": "link.xml helps?",
+      "back": "Preserve code from managed stripping.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_035",
+      "topicId": "csharp",
+      "front": "Boxing causes?",
+      "back": "GC allocations when value types are wrapped as objects.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_036",
+      "topicId": "csharp",
+      "front": "LINQ in Update risk?",
+      "back": "Hidden allocations and overhead on hot paths.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_037",
+      "topicId": "oop",
+      "front": "SerializeField purpose?",
+      "back": "Expose private fields to the Inspector while keeping encapsulation.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_038",
+      "topicId": "oop",
+      "front": "Composition over inheritance means?",
+      "back": "Combine components/behaviors instead of deep class trees.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_039",
+      "topicId": "patterns",
+      "front": "Object pool avoids?",
+      "back": "Frequent Instantiate/Destroy allocations and spikes.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_040",
+      "topicId": "patterns",
+      "front": "Observer pattern in Unity often uses?",
+      "back": "C# events, UnityEvents, or SO event channels.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_041",
+      "topicId": "algorithms",
+      "front": "Spatial hash helps?",
+      "back": "Broadphase neighbor queries without all-pairs checks.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_042",
+      "topicId": "algorithms",
+      "front": "Time-slicing AI prevents?",
+      "back": "Frame spikes when all agents think together.",
+      "difficulty": 2
+    },
+    {
+      "id": "fc_043",
+      "topicId": "datastruct",
+      "front": "HashSet best for?",
+      "back": "Fast membership tests.",
+      "difficulty": 1
+    },
+    {
+      "id": "fc_044",
+      "topicId": "datastruct",
+      "front": "NativeArray requires?",
+      "back": "Explicit allocation and Dispose for unmanaged memory.",
+      "difficulty": 1
+    }
+  ],
+  "lessons": [
+    {
+      "id": "les_basics_scenes",
+      "title": "Scenes & Boot Flow",
+      "topicId": "basics",
+      "summary": "How scenes and bootstraps structure Unity apps.",
+      "body": "Treat scenes as content boundaries. Use a boot scene for services, then load menus/gameplay. Prefer additive loading for layered UI + world. Keep EventSystem uniqueness in mind.",
+      "relatedQuestionIds": [
+        "q_basics_01",
+        "q_basics_05"
+      ],
+      "estimatedMinutes": 6
+    },
+    {
+      "id": "les_lifecycle_order",
+      "title": "Lifecycle Order Mastery",
+      "topicId": "lifecycle",
+      "summary": "Awake/OnEnable/Start and why order matters.",
+      "body": "Initialize self in Awake, cross-object in Start or explicit init. Avoid Find spam. Document execution order only as a last resort.",
+      "relatedQuestionIds": [
+        "q_lifecycle_01",
+        "q_lifecycle_03"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_go_composition",
+      "title": "Composition over Inheritance",
+      "topicId": "gameobject",
+      "summary": "Build behaviors from components.",
+      "body": "Favor small components and interfaces. Cache GetComponent. Prefer serialized references for known deps.",
+      "relatedQuestionIds": [
+        "q_gameobject_01",
+        "q_gameobject_02"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_physics_motion",
+      "title": "Physics Motion",
+      "topicId": "physics",
+      "summary": "Move bodies with the simulator.",
+      "body": "Use Rigidbody APIs in FixedUpdate. Separate rendering camera updates. Choose CCD modes intentionally.",
+      "relatedQuestionIds": [
+        "q_physics_02",
+        "q_physics_03"
+      ],
+      "estimatedMinutes": 6
+    },
+    {
+      "id": "les_ui_safearea",
+      "title": "Mobile UI & Safe Area",
+      "topicId": "ui",
+      "summary": "Layouts that survive notches.",
+      "body": "Anchor UI, pad with safeArea, split canvases, and profile rebuilds.",
+      "relatedQuestionIds": [
+        "q_ui_02",
+        "q_ui_03"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_anim_states",
+      "title": "Animator & States",
+      "topicId": "animation",
+      "summary": "Stateful animation with clean events.",
+      "body": "Keep Animator params semantic. Use SMB/events sparingly with service routing.",
+      "relatedQuestionIds": [
+        "q_animation_01",
+        "q_animation_03"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_nav_basics",
+      "title": "NavMesh Practical",
+      "topicId": "navigation",
+      "summary": "Bake, agents, dynamic blockers.",
+      "body": "Bake walkable surfaces, carve obstacles, repath on failure, know when grid AI is better.",
+      "relatedQuestionIds": [
+        "q_navigation_01",
+        "q_navigation_02"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_audio_mixer",
+      "title": "Audio Mixer Strategy",
+      "topicId": "audio",
+      "summary": "Groups, snapshots, voice limits.",
+      "body": "Route Music/SFX/UI, pool sources, and design foley data-driven.",
+      "relatedQuestionIds": [
+        "q_audio_01",
+        "q_audio_03"
+      ],
+      "estimatedMinutes": 4
+    },
+    {
+      "id": "les_so_data",
+      "title": "ScriptableObject Data",
+      "topicId": "scriptable",
+      "summary": "Shared config vs runtime state.",
+      "body": "SO for definitions/channels; keep progress in saves/instances.",
+      "relatedQuestionIds": [
+        "q_scriptable_01",
+        "q_scriptable_03"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_addr_memory",
+      "title": "Addressables Memory",
+      "topicId": "addressables",
+      "summary": "Handles, releases, offline-friendly catalogs.",
+      "body": "Track handles, ship critical local content, update remotely with retries.",
+      "relatedQuestionIds": [
+        "q_addressables_01",
+        "q_addressables_02"
+      ],
+      "estimatedMinutes": 7
+    },
+    {
+      "id": "les_render_mobile",
+      "title": "Mobile Rendering Budgets",
+      "topicId": "rendering",
+      "summary": "Draw calls, overdraw, lights.",
+      "body": "Budget calls and fill rate; bake lighting when possible; watch material batch breaks.",
+      "relatedQuestionIds": [
+        "q_rendering_01",
+        "q_rendering_02"
+      ],
+      "estimatedMinutes": 6
+    },
+    {
+      "id": "les_urp_choice",
+      "title": "Choosing URP",
+      "topicId": "srp",
+      "summary": "Pipeline choice and SRP Batcher.",
+      "body": "URP for scalable multiplatform; keep shaders batcher-friendly; tier quality assets.",
+      "relatedQuestionIds": [
+        "q_srp_01",
+        "q_srp_02"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_dots_when",
+      "title": "When DOTS Helps",
+      "topicId": "dots",
+      "summary": "Data-oriented wins and hybrid caution.",
+      "body": "Use ECS where counts explode; keep authoring costs honest; Burst loves blittable data.",
+      "relatedQuestionIds": [
+        "q_dots_01",
+        "q_dots_03"
+      ],
+      "estimatedMinutes": 6
+    },
+    {
+      "id": "les_net_authority",
+      "title": "Net Authority Basics",
+      "topicId": "multiplayer",
+      "summary": "Who may mutate state.",
+      "body": "Server authority + client prediction; interest management for bandwidth.",
+      "relatedQuestionIds": [
+        "q_multiplayer_01",
+        "q_multiplayer_02"
+      ],
+      "estimatedMinutes": 6
+    },
+    {
+      "id": "les_mobile_budgets",
+      "title": "Mobile Budgets & Thermals",
+      "topicId": "mobile",
+      "summary": "Sustained performance reality.",
+      "body": "Set budgets, profile devices, adapt quality under thermal load, compress textures.",
+      "relatedQuestionIds": [
+        "q_mobile_01",
+        "q_mobile_04"
+      ],
+      "estimatedMinutes": 7
+    },
+    {
+      "id": "les_build_ios",
+      "title": "iOS Build Readiness",
+      "topicId": "build",
+      "summary": "Player Settings and stripping.",
+      "body": "Versioning, IL2CPP, icons, privacy strings, test stripped release builds.",
+      "relatedQuestionIds": [
+        "q_build_01",
+        "q_build_03"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_csharp_gc",
+      "title": "C# GC Hotspots",
+      "topicId": "csharp",
+      "summary": "Allocations that hitch frames.",
+      "body": "Avoid per-frame LINQ/string/boxing; prefer non-alloc APIs and pooling.",
+      "relatedQuestionIds": [
+        "q_csharp_02",
+        "q_csharp_05"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_oop_unity",
+      "title": "OOP in Unity",
+      "topicId": "oop",
+      "summary": "Encapsulation with serialization.",
+      "body": "Serialize private fields, compose behaviors, avoid fragile bases.",
+      "relatedQuestionIds": [
+        "q_oop_01",
+        "q_oop_02"
+      ],
+      "estimatedMinutes": 4
+    },
+    {
+      "id": "les_patterns_core",
+      "title": "Patterns that Ship",
+      "topicId": "patterns",
+      "summary": "Observer, State, Pool, DI trade-offs.",
+      "body": "Use patterns to clarify ownership; avoid architecture astronautics.",
+      "relatedQuestionIds": [
+        "q_patterns_01",
+        "q_patterns_03",
+        "q_patterns_04"
+      ],
+      "estimatedMinutes": 6
+    },
+    {
+      "id": "les_algo_spatial",
+      "title": "Spatial Queries",
+      "topicId": "algorithms",
+      "summary": "Closest-target at scale.",
+      "body": "Partition space, non-alloc queries, time-slice AI.",
+      "relatedQuestionIds": [
+        "q_algorithms_01",
+        "q_algorithms_03"
+      ],
+      "estimatedMinutes": 5
+    },
+    {
+      "id": "les_ds_collections",
+      "title": "Collections Choices",
+      "topicId": "datastruct",
+      "summary": "List/Dict/NativeArray trade-offs.",
+      "body": "Preallocate, pick structures for access patterns, dispose native memory.",
+      "relatedQuestionIds": [
+        "q_datastruct_01",
+        "q_datastruct_03"
+      ],
+      "estimatedMinutes": 4
+    },
+    {
+      "id": "les_mistakes_perf",
+      "title": "Perf Interview Mistakes",
+      "topicId": "mobile",
+      "summary": "Common red flags interviewers hear.",
+      "body": "Find/GetComponent in Update, Instantiate spam, unbounded Update work\u2014know alternatives.",
+      "relatedQuestionIds": [
+        "q_mobile_01",
+        "q_csharp_02",
+        "q_patterns_03"
+      ],
+      "estimatedMinutes": 5
+    }
+  ],
+  "commonMistakes": [
+    {
+      "id": "cm_01",
+      "title": "Find/FindObjectOfType every frame",
+      "topicId": "basics",
+      "whyProblem": "Scene searches are expensive and allocate/unstable under load; they also hide architecture issues.",
+      "interviewerExpectation": "You cache references, inject dependencies, or use registries established at load time.",
+      "betterAlternative": "Serialize references, resolve once in Awake, or use a service/bootstrap locator.",
+      "codeAntiPattern": "void Update(){ var p = FindObjectOfType<Player>(); }",
+      "codeBetterPattern": "void Awake(){ _player = FindObjectOfType<Player>(); } // or inject"
+    },
+    {
+      "id": "cm_02",
+      "title": "Excessive Update usage",
+      "topicId": "lifecycle",
+      "whyProblem": "Per-frame work multiplies with object count and causes CPU spikes for rare events.",
+      "interviewerExpectation": "Move infrequent logic to events, coroutines/timers, or Jobs.",
+      "betterAlternative": "Event-driven updates, throttling, and LOD frequencies.",
+      "codeAntiPattern": "void Update(){ CheckQuestCompleteEveryFrame(); }",
+      "codeBetterPattern": "OnInventoryChanged += CheckQuestComplete;"
+    },
+    {
+      "id": "cm_03",
+      "title": "Frequent Instantiate/Destroy",
+      "topicId": "patterns",
+      "whyProblem": "Allocations and native engine costs hitch gameplay\u2014classic interview red flag.",
+      "interviewerExpectation": "Pooling for short-lived objects with proper reset.",
+      "betterAlternative": "Object pools with clear rent/return lifecycle.",
+      "codeAntiPattern": "Instantiate(bullet); Destroy(bullet,2f);",
+      "codeBetterPattern": "pool.Rent(); /*...*/ pool.Return(bullet);"
+    },
+    {
+      "id": "cm_04",
+      "title": "GetComponent in hot paths",
+      "topicId": "gameobject",
+      "whyProblem": "Repeated component lookups waste CPU and clutter code.",
+      "interviewerExpectation": "Cache components or use serialized refs.",
+      "betterAlternative": "Cache in Awake; TryGetComponent when optional.",
+      "codeAntiPattern": "void Update(){ GetComponent<Rigidbody>().AddForce(Vector3.up); }",
+      "codeBetterPattern": "void Awake(){ _rb=GetComponent<Rigidbody>(); }"
+    },
+    {
+      "id": "cm_05",
+      "title": "No object pooling for VFX/projectiles",
+      "topicId": "mobile",
+      "whyProblem": "Mobile GC and driver costs amplify spawn storms.",
+      "interviewerExpectation": "Budgeted pools and voice/VFX limits.",
+      "betterAlternative": "Prewarm pools; cap concurrent effects.",
+      "codeAntiPattern": "for(i...) Instantiate(explosion);",
+      "codeBetterPattern": "vfxPool.PlayAt(pos);"
+    },
+    {
+      "id": "cm_06",
+      "title": "Mutating shared ScriptableObject runtime state",
+      "topicId": "scriptable",
+      "whyProblem": "Shared assets corrupt across instances and may dirty Editor assets.",
+      "interviewerExpectation": "Separate definitions from instance state.",
+      "betterAlternative": "Runtime copies or save-game DTOs for mutable values.",
+      "codeAntiPattern": "enemyStats.health -= dmg; // shared SO",
+      "codeBetterPattern": "runtimeHealth -= dmg; // instance field"
+    },
+    {
+      "id": "cm_07",
+      "title": "Transform-moving dynamic Rigidbodies",
+      "topicId": "physics",
+      "whyProblem": "Fights physics simulation, breaks collisions/interpolation.",
+      "interviewerExpectation": "Use Rigidbody API in FixedUpdate.",
+      "betterAlternative": "MovePosition/AddForce depending on body type.",
+      "codeAntiPattern": "transform.position += vel*dt;",
+      "codeBetterPattern": "_rb.MovePosition(_rb.position + vel*dt);"
+    },
+    {
+      "id": "cm_08",
+      "title": "Ignoring safe areas on notched phones",
+      "topicId": "ui",
+      "whyProblem": "Controls under notch/home indicator fail review UX expectations.",
+      "interviewerExpectation": "Safe-area aware layouts and device testing.",
+      "betterAlternative": "Apply Screen.safeArea padding containers.",
+      "codeAntiPattern": "// hardcoded Y=0 bottom bar",
+      "codeBetterPattern": "pad.offsetMin = new Vector2(safe.xMin, safe.yMin);"
+    },
+    {
+      "id": "cm_09",
+      "title": "Never releasing Addressables handles",
+      "topicId": "addressables",
+      "whyProblem": "Memory grows until crashes\u2014especially on iOS.",
+      "interviewerExpectation": "Handle ownership and Release/ReleaseInstance discipline.",
+      "betterAlternative": "Track handles per screen/scope; release on exit.",
+      "codeAntiPattern": "Addressables.LoadAssetAsync<GameObject>(key);",
+      "codeBetterPattern": "handle = Load...; /*use*/ Addressables.Release(handle);"
+    },
+    {
+      "id": "cm_10",
+      "title": "Client-authoritative inventory in multiplayer",
+      "topicId": "multiplayer",
+      "whyProblem": "Trivial cheating and desync.",
+      "interviewerExpectation": "Server validation of grants/consumes.",
+      "betterAlternative": "Server authority with client prediction only for visuals.",
+      "codeAntiPattern": "client.AddGold(999999);",
+      "codeBetterPattern": "server.TryAddGold(playerId, amount);"
+    },
+    {
+      "id": "cm_11",
+      "title": "Unbounded string concatenation in Update",
+      "topicId": "csharp",
+      "whyProblem": "Creates GC garbage every frame.",
+      "interviewerExpectation": "Cache strings or rebuild on change only.",
+      "betterAlternative": "Set text when values change; use StringBuilder/ZString carefully.",
+      "codeAntiPattern": "label.text = \"Score \"+score; // each frame",
+      "codeBetterPattern": "if(scoreChanged) label.text = $\"Score {score}\";"
+    },
+    {
+      "id": "cm_12",
+      "title": "Everything on Default layer",
+      "topicId": "physics",
+      "whyProblem": "Extra collisions/queries and harder filtering.",
+      "interviewerExpectation": "Thoughtful layers + matrix + masks.",
+      "betterAlternative": "Define Player/Enemy/Environment/UI layers and masks.",
+      "codeAntiPattern": "Physics.Raycast(ray);",
+      "codeBetterPattern": "Physics.Raycast(ray, dist, interactMask);"
+    }
+  ]
+}
