@@ -1,11 +1,14 @@
 #if UNITY_EDITOR
 using System;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.UI;
 using UIP.Content;
+using UIP.Core;
+using UIP.UI;
 
 namespace UIP.EditorTools
 {
@@ -41,32 +44,39 @@ namespace UIP.EditorTools
                 throw new InvalidOperationException("Expected at least 75 questions.");
             }
 
-            if (Resources.Load<PanelSettings>("Panel/AppPanelSettings") == null)
-            {
-                throw new InvalidOperationException("Missing PanelSettings resource.");
-            }
-
-            if (Resources.Load<UnityEngine.UIElements.VisualTreeAsset>("UI/AppShell") == null)
-            {
-                throw new InvalidOperationException("Missing AppShell UXML resource.");
-            }
-
-            if (Resources.Load<UnityEngine.UIElements.StyleSheet>("UI/AppTheme") == null)
-            {
-                throw new InvalidOperationException("Missing AppTheme USS resource.");
-            }
-
-            if (Resources.Load<UnityEngine.TextCore.Text.FontAsset>("Fonts & Materials/LiberationSans SDF") == null
-                && Resources.Load<Font>("UI/Fonts/LiberationSans") == null)
-            {
-                throw new InvalidOperationException("Missing UI font assets.");
-            }
-
             var scene = EditorSceneManager.OpenScene("Assets/Scenes/0_SplashScene.unity", OpenSceneMode.Single);
             var bootstrap = UnityEngine.Object.FindFirstObjectByType<UIP.App.AppBootstrap>();
             if (bootstrap == null)
             {
                 throw new InvalidOperationException("AppBootstrap missing from splash scene.");
+            }
+
+            var canvas = UnityEngine.Object.FindFirstObjectByType<Canvas>();
+            if (canvas == null)
+            {
+                throw new InvalidOperationException("Canvas missing from splash scene. Run UIP/Setup Canvas UI.");
+            }
+
+            var screens = Resources.FindObjectsOfTypeAll<UiScreen>()
+                .Where(s => s != null && s.gameObject.scene.IsValid() && s.gameObject.scene.path.Contains("0_SplashScene"))
+                .ToList();
+            var expected = Enum.GetValues(typeof(AppScreen)).Length;
+            if (screens.Count < expected)
+            {
+                var foundIds = string.Join(", ", screens.Select(s => s.ScreenId).Distinct().OrderBy(x => x));
+                throw new InvalidOperationException(
+                    $"Expected {expected} UiScreen panels, found {screens.Count}. Present: {foundIds}");
+            }
+
+            var ids = screens.Select(s => s.ScreenId).Distinct().Count();
+            if (ids < expected)
+            {
+                throw new InvalidOperationException("Not all AppScreen values have a UiScreen panel.");
+            }
+
+            if (UnityEngine.Object.FindFirstObjectByType<NavBarView>() == null)
+            {
+                throw new InvalidOperationException("NavBarView missing from splash scene.");
             }
 
             if (PlayerSettings.productName != "Unity Interview Prep")
@@ -84,7 +94,7 @@ namespace UIP.EditorTools
                 throw new InvalidOperationException("Missing App Store review notes.");
             }
 
-            Debug.Log($"Validated content v{repo.ContentVersion} with {repo.Questions.Count} questions, scene '{scene.path}'.");
+            Debug.Log($"Validated content v{repo.ContentVersion} with {repo.Questions.Count} questions, scene '{scene.path}', {screens.Count} screens.");
         }
     }
 }

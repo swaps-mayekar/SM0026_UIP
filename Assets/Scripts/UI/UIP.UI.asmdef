@@ -6,7 +6,9 @@
         "UIP.Content",
         "UIP.Persistence",
         "UIP.Features",
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
