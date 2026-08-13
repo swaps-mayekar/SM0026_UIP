@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using UnityEngine.UIElements;
 using UIP.Content;
 using UIP.Core;
@@ -70,8 +71,12 @@ namespace UIP.App
                 root.styleSheets.Add(theme);
             }
 
+            ApplyDefaultFont(root);
+
             _contentHost = root.Q("content-host") ?? CreateFallbackHost(root);
+            ApplyDefaultFont(_contentHost);
             _navBar = root.Q("nav-bar");
+            ApplyDefaultFont(_navBar);
 
             WireNav(root);
             ApplySafeArea(root.Q("safe-area") ?? root);
@@ -101,6 +106,37 @@ namespace UIP.App
                 _context.Navigation.Navigated -= OnNavigated;
                 _context.Persist();
             }
+        }
+
+        void ApplyDefaultFont(VisualElement root)
+        {
+            if (root == null)
+            {
+                return;
+            }
+
+            // LiberationSans SDF is a TextCore FontAsset under Resources.
+            var fontAsset = Resources.Load<FontAsset>("Fonts & Materials/LiberationSans SDF");
+            if (fontAsset != null)
+            {
+                root.style.unityFontDefinition = new StyleFontDefinition(fontAsset);
+                return;
+            }
+
+            var sourceFont = Resources.Load<Font>("UI/Fonts/LiberationSans");
+            if (sourceFont == null)
+            {
+                sourceFont = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            }
+
+            if (sourceFont != null)
+            {
+                // Legacy path keeps UITK text visible when no FontAsset is available.
+                root.style.unityFont = new StyleFont(sourceFont);
+                return;
+            }
+
+            Debug.LogError("UIP: No UI font available. Labels and buttons will appear blank.");
         }
 
         void OnApplicationPause(bool pauseStatus)

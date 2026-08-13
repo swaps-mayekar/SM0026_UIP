@@ -56,6 +56,12 @@ namespace UIP.EditorTools
                 throw new InvalidOperationException("Missing AppTheme USS resource.");
             }
 
+            if (Resources.Load<UnityEngine.TextCore.Text.FontAsset>("Fonts & Materials/LiberationSans SDF") == null
+                && Resources.Load<Font>("UI/Fonts/LiberationSans") == null)
+            {
+                throw new InvalidOperationException("Missing UI font assets.");
+            }
+
             var scene = EditorSceneManager.OpenScene("Assets/Scenes/0_SplashScene.unity", OpenSceneMode.Single);
             var bootstrap = UnityEngine.Object.FindFirstObjectByType<UIP.App.AppBootstrap>();
             if (bootstrap == null)

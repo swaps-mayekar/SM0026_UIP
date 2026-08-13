@@ -14,6 +14,7 @@ namespace UIP.EditorTools
         const string PanelPath = "Assets/Resources/Panel/AppPanelSettings.asset";
         const string ShellPath = "Assets/UI/Views/AppShell.uxml";
         const string ThemePath = "Assets/UI/Styles/AppTheme.uss";
+        const string RuntimeThemePath = "Assets/Resources/UI/AppRuntimeTheme.tss";
 
         [MenuItem("UIP/Setup MVP Scene")]
         public static void SetupFromMenu()
@@ -28,6 +29,13 @@ namespace UIP.EditorTools
             EnsureFolder("Assets/Resources/Content");
             EnsureFolder("Assets/Resources/UI");
 
+            if (!File.Exists(RuntimeThemePath))
+            {
+                File.WriteAllText(RuntimeThemePath,
+                    "@import url(\"unity-theme://default\");\n@import url(\"AppTheme.uss\");\n");
+                AssetDatabase.ImportAsset(RuntimeThemePath);
+            }
+
             var panel = AssetDatabase.LoadAssetAtPath<PanelSettings>(PanelPath);
             if (panel == null)
             {
@@ -39,6 +47,19 @@ namespace UIP.EditorTools
             panel.referenceResolution = new Vector2Int(390, 844);
             panel.screenMatchMode = PanelScreenMatchMode.MatchWidthOrHeight;
             panel.match = 0.5f;
+
+            var runtimeTheme = AssetDatabase.LoadAssetAtPath<ThemeStyleSheet>(RuntimeThemePath);
+            if (runtimeTheme != null)
+            {
+                var panelSo = new SerializedObject(panel);
+                var themeProp = panelSo.FindProperty("themeUss") ?? panelSo.FindProperty("m_ThemeStyleSheet");
+                if (themeProp != null)
+                {
+                    themeProp.objectReferenceValue = runtimeTheme;
+                    panelSo.ApplyModifiedPropertiesWithoutUndo();
+                }
+            }
+
             EditorUtility.SetDirty(panel);
 
             var shell = AssetDatabase.LoadAssetAtPath<VisualTreeAsset>(ShellPath);
