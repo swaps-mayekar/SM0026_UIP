@@ -657,7 +657,7 @@ namespace UIP.EditorTools
             contentRt.anchoredPosition = new Vector2(0, -12);
             contentRt.sizeDelta = new Vector2(-32, 0);
             var vlg = content.AddComponent<VerticalLayoutGroup>();
-            vlg.padding = new RectOffset(0, 0, 10, 0);
+            vlg.padding = new RectOffset(0, 0, 10, 10);
             vlg.spacing = 10;
             vlg.childControlHeight = true;
             vlg.childControlWidth = true;

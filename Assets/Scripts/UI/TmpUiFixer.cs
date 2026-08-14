@@ -204,12 +204,12 @@ namespace UIP.UI
         }
 
         /// <summary>
-        /// ScrollRect overwrites content anchoredPosition, so a top offset is lost.
-        /// Layout padding keeps Back and titles off the screen edge.
+        /// ScrollRect overwrites content anchoredPosition, so edge offsets are lost.
+        /// Layout padding keeps content off the top and bottom of each panel.
         /// </summary>
         static void PadScrollPanels(Transform root)
         {
-            const int TopPadding = 10;
+            const int EdgePadding = 10;
             var scrolls = root.GetComponentsInChildren<ScrollRect>(true);
             foreach (var scroll in scrolls)
             {
@@ -225,9 +225,21 @@ namespace UIP.UI
                 }
 
                 var padding = group.padding;
-                if (padding.top < TopPadding)
+                var changed = false;
+                if (padding.top < EdgePadding)
                 {
-                    padding.top = TopPadding;
+                    padding.top = EdgePadding;
+                    changed = true;
+                }
+
+                if (padding.bottom < EdgePadding)
+                {
+                    padding.bottom = EdgePadding;
+                    changed = true;
+                }
+
+                if (changed)
+                {
                     group.padding = padding;
                 }
             }
