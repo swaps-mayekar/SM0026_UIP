@@ -5,8 +5,8 @@ using UnityEngine.UI;
 namespace UIP.UI
 {
     /// <summary>
-    /// Fixes UITK-to-uGUI leftovers that make screen content invisible:
-    /// transparent Mask stencils clip everything, and TMP needs orthographic UI mode.
+    /// Runtime UI repairs: TMP orthographic mode, transparent Mask stencils, and
+    /// nested vertical columns that otherwise stay at Unity's default 100px width.
     /// </summary>
     public sealed class TmpUiFixer : MonoBehaviour
     {
@@ -32,6 +32,7 @@ namespace UIP.UI
                 }
 
                 tmp.isOrthographic = true;
+                tmp.enableWordWrapping = true;
                 if (tmp.font == null && font != null)
                 {
                     tmp.font = font;
@@ -56,7 +57,28 @@ namespace UIP.UI
                 mask.showMaskGraphic = false;
             }
 
+            StretchVerticalColumns(root);
             Canvas.ForceUpdateCanvases();
+        }
+
+        /// <summary>
+        /// Nested VerticalLayoutGroups default to childControlWidth=false, so children
+        /// keep Unity's 100px RectTransform and render as a skinny left column.
+        /// </summary>
+        static void StretchVerticalColumns(Transform root)
+        {
+            var groups = root.GetComponentsInChildren<VerticalLayoutGroup>(true);
+            foreach (var group in groups)
+            {
+                if (group == null)
+                {
+                    continue;
+                }
+
+                group.childControlWidth = true;
+                group.childForceExpandWidth = true;
+                group.childForceExpandHeight = false;
+            }
         }
     }
 }

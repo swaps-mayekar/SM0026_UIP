@@ -34,6 +34,7 @@ namespace UIP.UI
         {
             gameObject.SetActive(true);
             Refresh();
+            TmpUiFixer.Fix(transform);
         }
 
         public void Hide()
@@ -58,6 +59,10 @@ namespace UIP.UI
             if (go != null && go.activeSelf != active)
             {
                 go.SetActive(active);
+                if (active)
+                {
+                    TmpUiFixer.Fix(go.transform);
+                }
             }
         }
 

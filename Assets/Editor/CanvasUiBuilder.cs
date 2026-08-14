@@ -212,9 +212,7 @@ namespace UIP.EditorTools
             var content = CreateScrollContent(root.transform, out _);
             CreateLabel("Title", content, "Learn", 24, true, UiTheme.Text);
             CreateLabel("Sub", content, "Role-based paths with original lessons.", 13, false, UiTheme.TextMuted);
-            var list = CreateUIObject("List", content);
-            list.AddComponent<VerticalLayoutGroup>().spacing = 10;
-            list.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var list = CreateStretchColumn("List", content, 10);
             var mistakes = CreateButton("Mistakes", content, "Browse common mistakes", false);
             var flashcards = CreateButton("Flashcards", content, "Flashcards", false);
             var screen = screenGo.AddComponent<LearnScreen>();
@@ -231,9 +229,7 @@ namespace UIP.EditorTools
             var title = CreateLabel("Title", content, "Path", 24, true, UiTheme.Text);
             var body = CreateLabel("Body", content, "", 13, false, UiTheme.TextMuted);
             CreateProgress("Progress", content, out var fill);
-            var list = CreateUIObject("List", content);
-            list.AddComponent<VerticalLayoutGroup>().spacing = 10;
-            list.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var list = CreateStretchColumn("List", content, 10);
             var screen = screenGo.AddComponent<LearnPathDetailScreen>();
             screen.Configure(AppScreen.LearnPathDetail);
             screen.Wire(back, title, body, fill, list.transform, lessonPrefab);
@@ -249,9 +245,7 @@ namespace UIP.EditorTools
             var difficulty = CreateWrapRow("Difficulty", content);
             var topics = CreateWrapRow("Topics", content);
             var count = CreateLabel("Count", content, "0 questions", 12, false, UiTheme.TextMuted);
-            var list = CreateUIObject("List", content);
-            list.AddComponent<VerticalLayoutGroup>().spacing = 10;
-            list.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var list = CreateStretchColumn("List", content, 10);
             var screen = screenGo.AddComponent<PracticeScreen>();
             screen.Configure(AppScreen.Practice);
             screen.Wire(search, difficulty.transform, topics.transform, list.transform, chipPrefab, rowPrefab, count);
@@ -271,9 +265,7 @@ namespace UIP.EditorTools
             var bookmark = CreateButton("Bookmark", content, "Bookmark", false);
             var bookmarkLabel = bookmark.GetComponentInChildren<TMP_Text>();
             var reveal = CreateButton("Reveal", content, "Reveal recommended answer", true);
-            var revealed = CreateUIObject("Revealed", content);
-            revealed.AddComponent<VerticalLayoutGroup>().spacing = 8;
-            revealed.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var revealed = CreateStretchColumn("Revealed", content, 8);
             CreateLabel("IntentTitle", revealed.transform, "Interviewer's intent", 14, true, UiTheme.Accent);
             var intent = CreateLabel("Intent", revealed.transform, "", 13, false, UiTheme.TextMuted);
             CreateLabel("IdealTitle", revealed.transform, "Ideal answer", 14, true, UiTheme.Accent);
@@ -325,9 +317,7 @@ namespace UIP.EditorTools
             var pause = CreateButton("Pause", content, "Pause", false);
             var pauseLabel = pause.GetComponentInChildren<TMP_Text>();
             var reveal = CreateButton("Reveal", content, "Reveal recommended answer", true);
-            var revealed = CreateUIObject("Revealed", content);
-            revealed.AddComponent<VerticalLayoutGroup>().spacing = 8;
-            revealed.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var revealed = CreateStretchColumn("Revealed", content, 8);
             CreateLabel("IdealTitle", revealed.transform, "Ideal answer", 14, true, UiTheme.Accent);
             var ideal = CreateLabel("Ideal", revealed.transform, "", 13, false, UiTheme.TextMuted);
             CreateLabel("IntentTitle", revealed.transform, "Interviewer's intent", 14, true, UiTheme.Accent);
@@ -352,9 +342,7 @@ namespace UIP.EditorTools
             CreateLabel("Title", content, "Mock summary", 24, true, UiTheme.Text);
             var score = CreateLabel("Score", content, "—", 22, true, UiTheme.Accent);
             var meta = CreateLabel("Meta", content, "", 13, false, UiTheme.TextMuted);
-            var list = CreateUIObject("List", content);
-            list.AddComponent<VerticalLayoutGroup>().spacing = 10;
-            list.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var list = CreateStretchColumn("List", content, 10);
             var home = CreateButton("Home", content, "Back to home", true);
             var again = CreateButton("Again", content, "Try another mock", false);
             var screen = screenGo.AddComponent<MockSummaryScreen>();
@@ -370,9 +358,7 @@ namespace UIP.EditorTools
             CreateLabel("Title", content, "Flashcards", 24, true, UiTheme.Text);
             var due = CreateLabel("Due", content, "", 13, false, UiTheme.TextMuted);
             var review = CreateButton("ReviewDue", content, "Review due cards", true);
-            var list = CreateUIObject("List", content);
-            list.AddComponent<VerticalLayoutGroup>().spacing = 10;
-            list.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var list = CreateStretchColumn("List", content, 10);
             var screen = screenGo.AddComponent<FlashcardsHubScreen>();
             screen.Configure(AppScreen.Flashcards);
             screen.Wire(due, review, list.transform, rowPrefab);
@@ -442,13 +428,9 @@ namespace UIP.EditorTools
             var conf = MakeStat("Confidence", "Confidence");
             CreateLabel("WeakTitle", content, "Weak topics", 14, true, UiTheme.Accent);
             var weakEmpty = CreateLabel("WeakEmpty", content, "Practice more to generate coaching signals.", 12, false, UiTheme.TextMuted);
-            var weak = CreateUIObject("WeakList", content);
-            weak.AddComponent<VerticalLayoutGroup>().spacing = 10;
-            weak.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var weak = CreateStretchColumn("WeakList", content, 10);
             CreateLabel("ActivityTitle", content, "Recent activity", 14, true, UiTheme.Accent);
-            var activity = CreateUIObject("ActivityList", content);
-            activity.AddComponent<VerticalLayoutGroup>().spacing = 6;
-            activity.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var activity = CreateStretchColumn("ActivityList", content, 6);
             var bookmarks = CreateButton("Bookmarks", content, "Bookmarks", false);
             var screen = screenGo.AddComponent<ProgressScreen>();
             screen.Configure(AppScreen.Progress);
@@ -463,9 +445,7 @@ namespace UIP.EditorTools
             var back = CreateButton("Back", content, "← Back", false);
             CreateLabel("Title", content, "Bookmarks", 24, true, UiTheme.Text);
             var empty = CreateLabel("Empty", content, "No bookmarks yet", 14, false, UiTheme.TextMuted);
-            var list = CreateUIObject("List", content);
-            list.AddComponent<VerticalLayoutGroup>().spacing = 10;
-            list.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var list = CreateStretchColumn("List", content, 10);
             var screen = screenGo.AddComponent<BookmarksScreen>();
             screen.Configure(AppScreen.Bookmarks);
             screen.Wire(back, list.transform, rowPrefab, empty.gameObject);
@@ -478,9 +458,7 @@ namespace UIP.EditorTools
             var content = CreateScrollContent(root.transform, out _);
             var back = CreateButton("Back", content, "← Back", false);
             CreateLabel("Title", content, "Common interview mistakes", 24, true, UiTheme.Text);
-            var list = CreateUIObject("List", content);
-            list.AddComponent<VerticalLayoutGroup>().spacing = 10;
-            list.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var list = CreateStretchColumn("List", content, 10);
             var screen = screenGo.AddComponent<MistakesScreen>();
             screen.Configure(AppScreen.CommonMistakes);
             screen.Wire(back, list.transform, rowPrefab);
@@ -631,6 +609,23 @@ namespace UIP.EditorTools
             return screenGo;
         }
 
+        static GameObject CreateStretchColumn(string name, Transform parent, float spacing)
+        {
+            var go = CreateUIObject(name, parent);
+            var vlg = go.AddComponent<VerticalLayoutGroup>();
+            vlg.spacing = spacing;
+            vlg.childAlignment = TextAnchor.UpperLeft;
+            vlg.childControlWidth = true;
+            vlg.childControlHeight = false;
+            vlg.childForceExpandWidth = true;
+            vlg.childForceExpandHeight = false;
+            go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var le = go.AddComponent<LayoutElement>();
+            le.flexibleWidth = 1;
+            le.minWidth = 0;
+            return go;
+        }
+
         static Transform CreateScrollContent(Transform parent, out ScrollRect scroll)
         {
             var scrollGo = CreateUIObject("Scroll", parent);
@@ -768,6 +763,7 @@ namespace UIP.EditorTools
             // Required for Screen Space Overlay / Camera UI canvases.
             tmp.isOrthographic = true;
             var fitter = go.AddComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             return tmp;
         }
@@ -819,6 +815,9 @@ namespace UIP.EditorTools
             vlg.childForceExpandHeight = false;
             vlg.childForceExpandWidth = true;
             go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var rowLe = go.AddComponent<LayoutElement>();
+            rowLe.flexibleWidth = 1;
+            rowLe.minWidth = 0;
             var title = CreateLabel("Title", go.transform, "Title", 16, true, UiTheme.Text);
             var subtitle = CreateLabel("Subtitle", go.transform, "Subtitle", 12, false, UiTheme.TextMuted);
             var body = CreateLabel("Body", go.transform, "Body", 13, false, UiTheme.TextMuted);
@@ -844,6 +843,9 @@ namespace UIP.EditorTools
             vlg.childForceExpandHeight = false;
             vlg.childForceExpandWidth = true;
             go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var rowLe = go.AddComponent<LayoutElement>();
+            rowLe.flexibleWidth = 1;
+            rowLe.minWidth = 0;
             var title = CreateLabel("Title", go.transform, "Lesson", 16, true, UiTheme.Text);
             var badge = CreateLabel("Badge", go.transform, "5 min", 11, true, UiTheme.Accent);
             var summary = CreateLabel("Summary", go.transform, "", 13, false, UiTheme.TextMuted);

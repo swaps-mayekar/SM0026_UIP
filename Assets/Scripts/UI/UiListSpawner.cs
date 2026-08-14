@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UIP.UI
 {
@@ -41,6 +42,14 @@ namespace UIP.UI
             {
                 var instance = UnityEngine.Object.Instantiate(prefab, parent);
                 instance.SetActive(true);
+                var layoutElement = instance.GetComponent<LayoutElement>();
+                if (layoutElement == null)
+                {
+                    layoutElement = instance.AddComponent<LayoutElement>();
+                }
+
+                layoutElement.flexibleWidth = 1;
+                layoutElement.minWidth = 0;
                 var component = instance.GetComponent<T>() ?? instance.GetComponentInChildren<T>(true);
                 if (component != null)
                 {
@@ -49,6 +58,7 @@ namespace UIP.UI
                 }
             }
 
+            TmpUiFixer.Fix(parent);
             return results;
         }
     }
