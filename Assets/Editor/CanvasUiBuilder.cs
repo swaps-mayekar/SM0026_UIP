@@ -59,6 +59,7 @@ namespace UIP.EditorTools
             scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
             scaler.matchWidthOrHeight = 0.5f;
             canvasGo.AddComponent<GraphicRaycaster>();
+            canvasGo.AddComponent<TmpUiFixer>();
             var canvasBg = canvasGo.AddComponent<Image>();
             canvasBg.color = UiTheme.Bg;
             canvasBg.raycastTarget = false;
@@ -641,8 +642,7 @@ namespace UIP.EditorTools
 
             var viewport = CreateUIObject("Viewport", scrollGo.transform);
             Stretch(viewport.GetComponent<RectTransform>());
-            viewport.AddComponent<Image>().color = Color.clear;
-            viewport.AddComponent<Mask>().showMaskGraphic = false;
+            viewport.AddComponent<RectMask2D>();
             scroll.viewport = viewport.GetComponent<RectTransform>();
 
             var content = CreateUIObject("Content", viewport.transform);
@@ -650,8 +650,8 @@ namespace UIP.EditorTools
             contentRt.anchorMin = new Vector2(0, 1);
             contentRt.anchorMax = new Vector2(1, 1);
             contentRt.pivot = new Vector2(0.5f, 1);
-            contentRt.offsetMin = new Vector2(16, 0);
-            contentRt.offsetMax = new Vector2(-16, -12);
+            contentRt.anchoredPosition = new Vector2(0, -12);
+            contentRt.sizeDelta = new Vector2(-32, 0);
             var vlg = content.AddComponent<VerticalLayoutGroup>();
             vlg.spacing = 10;
             vlg.childControlHeight = true;
@@ -764,6 +764,9 @@ namespace UIP.EditorTools
             tmp.text = value;
             tmp.enableWordWrapping = true;
             tmp.overflowMode = TextOverflowModes.Overflow;
+            tmp.raycastTarget = false;
+            // Required for Screen Space Overlay / Camera UI canvases.
+            tmp.isOrthographic = true;
             var fitter = go.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             return tmp;

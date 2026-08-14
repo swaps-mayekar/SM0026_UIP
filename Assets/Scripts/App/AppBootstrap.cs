@@ -49,9 +49,19 @@ namespace UIP.App
                 }
             }
 
+            if (rootCanvas == null)
+            {
+                rootCanvas = FindFirstObjectByType<Canvas>();
+            }
+
             var content = ContentRepository.LoadFromResources();
             var store = new ProfileStore();
             _context = new AppContext(content, store);
+
+            if (rootCanvas != null)
+            {
+                TmpUiFixer.Fix(rootCanvas.transform);
+            }
 
             var screens = FindObjectsByType<UiScreen>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             screenRouter.Initialize(_context, navBar, screens);
@@ -65,6 +75,9 @@ namespace UIP.App
             {
                 _context.Navigation.Go(AppScreen.Home);
             }
+
+            // Ensure first paint even if Navigated was suppressed.
+            screenRouter.Render();
         }
 
         void Update()
