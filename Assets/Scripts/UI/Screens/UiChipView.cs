@@ -38,6 +38,37 @@ namespace UIP.UI
                     button.onClick.AddListener(() => onClick());
                 }
             }
+
+            SizeToText();
+        }
+
+        public void SizeToText()
+        {
+            if (label != null)
+            {
+                label.enableWordWrapping = false;
+                label.overflowMode = TextOverflowModes.Overflow;
+                label.ForceMeshUpdate();
+            }
+
+            var layoutElement = GetComponent<LayoutElement>();
+            if (layoutElement == null)
+            {
+                layoutElement = gameObject.AddComponent<LayoutElement>();
+            }
+
+            layoutElement.flexibleWidth = 0;
+            layoutElement.minHeight = 32;
+            layoutElement.preferredHeight = 32;
+            if (label == null)
+            {
+                return;
+            }
+
+            const float HorizontalPad = 20f;
+            var width = Mathf.Max(48f, label.preferredWidth + HorizontalPad);
+            layoutElement.minWidth = width;
+            layoutElement.preferredWidth = width;
         }
     }
 }

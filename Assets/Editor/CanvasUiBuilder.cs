@@ -688,15 +688,46 @@ namespace UIP.EditorTools
         static GameObject CreateWrapRow(string name, Transform parent)
         {
             var row = CreateUIObject(name, parent);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
+            var rowLe = row.AddComponent<LayoutElement>();
+            rowLe.minHeight = 36;
+            rowLe.preferredHeight = 36;
+            rowLe.flexibleWidth = 1;
+            rowLe.minWidth = 0;
+
+            var scroll = row.AddComponent<NestedScrollRect>();
+            scroll.horizontal = true;
+            scroll.vertical = false;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.inertia = true;
+
+            var viewport = CreateUIObject("Viewport", row.transform);
+            Stretch(viewport.GetComponent<RectTransform>());
+            var viewportImage = viewport.AddComponent<Image>();
+            viewportImage.color = Color.clear;
+            viewportImage.raycastTarget = true;
+            viewport.AddComponent<RectMask2D>();
+            scroll.viewport = viewport.GetComponent<RectTransform>();
+
+            var content = CreateUIObject("Content", viewport.transform);
+            var contentRt = content.GetComponent<RectTransform>();
+            contentRt.anchorMin = new Vector2(0, 0);
+            contentRt.anchorMax = new Vector2(0, 1);
+            contentRt.pivot = new Vector2(0, 0.5f);
+            contentRt.anchoredPosition = Vector2.zero;
+            contentRt.sizeDelta = Vector2.zero;
+            var layout = content.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = 8;
-            layout.childControlWidth = false;
+            layout.childAlignment = TextAnchor.MiddleLeft;
+            layout.childControlWidth = true;
             layout.childForceExpandWidth = false;
             layout.childControlHeight = true;
-            var fitter = row.AddComponent<ContentSizeFitter>();
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            layout.childForceExpandHeight = false;
+            layout.padding = new RectOffset(0, 8, 0, 0);
+            var fitter = content.AddComponent<ContentSizeFitter>();
             fitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
-            return row;
+            fitter.verticalFit = ContentSizeFitter.FitMode.Unconstrained;
+            scroll.content = contentRt;
+            return content;
         }
 
         static GameObject CreateProgress(string name, Transform parent, out Image fill)
@@ -785,12 +816,28 @@ namespace UIP.EditorTools
             var img = go.AddComponent<Image>();
             img.color = UiTheme.BgCardAlt;
             var btn = go.AddComponent<Button>();
+            var chipLayout = go.AddComponent<HorizontalLayoutGroup>();
+            chipLayout.padding = new RectOffset(10, 10, 6, 6);
+            chipLayout.childAlignment = TextAnchor.MiddleCenter;
+            chipLayout.childControlWidth = true;
+            chipLayout.childForceExpandWidth = false;
+            chipLayout.childControlHeight = true;
+            chipLayout.childForceExpandHeight = false;
             var le = go.AddComponent<LayoutElement>();
             le.minHeight = 32;
             le.preferredHeight = 32;
+            le.minWidth = 48;
+            le.flexibleWidth = 0;
             var label = CreateLabel("Label", go.transform, "Chip", 12, false, UiTheme.Text);
             label.alignment = TextAlignmentOptions.Center;
-            Stretch(label.rectTransform, 10, 6, 10, 6);
+            label.enableWordWrapping = false;
+            label.overflowMode = TextOverflowModes.Overflow;
+            var labelFitter = label.GetComponent<ContentSizeFitter>();
+            labelFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            labelFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            var chipFitter = go.AddComponent<ContentSizeFitter>();
+            chipFitter.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            chipFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             var chip = go.AddComponent<UiChipView>();
             chip.Wire(btn, label, img);
             var prefab = PrefabUtility.SaveAsPrefabAsset(go, path);

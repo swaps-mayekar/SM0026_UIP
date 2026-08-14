@@ -37,7 +37,9 @@ namespace UIP.UI
                 return results;
             }
 
+            parent = TmpUiFixer.EnsureHorizontalChipScroll(parent);
             Clear(parent);
+            var stretchWidth = parent.GetComponent<HorizontalLayoutGroup>() == null;
             for (var i = 0; i < count; i++)
             {
                 var instance = UnityEngine.Object.Instantiate(prefab, parent);
@@ -48,8 +50,16 @@ namespace UIP.UI
                     layoutElement = instance.AddComponent<LayoutElement>();
                 }
 
-                layoutElement.flexibleWidth = 1;
-                layoutElement.minWidth = 0;
+                if (stretchWidth)
+                {
+                    layoutElement.flexibleWidth = 1;
+                    layoutElement.minWidth = 0;
+                }
+                else
+                {
+                    layoutElement.flexibleWidth = 0;
+                }
+
                 var component = instance.GetComponent<T>() ?? instance.GetComponentInChildren<T>(true);
                 if (component != null)
                 {
