@@ -646,6 +646,9 @@ namespace UIP.EditorTools
 
             var viewport = CreateUIObject("Viewport", scrollGo.transform);
             Stretch(viewport.GetComponent<RectTransform>());
+            var viewportImage = viewport.AddComponent<Image>();
+            viewportImage.color = Color.clear;
+            viewportImage.raycastTarget = true;
             viewport.AddComponent<RectMask2D>();
             scroll.viewport = viewport.GetComponent<RectTransform>();
 
@@ -656,6 +659,9 @@ namespace UIP.EditorTools
             contentRt.pivot = new Vector2(0.5f, 1);
             contentRt.anchoredPosition = new Vector2(0, -12);
             contentRt.sizeDelta = new Vector2(-32, 0);
+            var contentImage = content.AddComponent<Image>();
+            contentImage.color = Color.clear;
+            contentImage.raycastTarget = true;
             var vlg = content.AddComponent<VerticalLayoutGroup>();
             vlg.padding = new RectOffset(0, 0, 10, 10);
             vlg.spacing = 10;

@@ -65,6 +65,7 @@ namespace UIP.UI
 
             StretchVerticalColumns(root);
             PadScrollPanels(root);
+            EnsureScrollRaycasts(root);
 
             var chips = root.GetComponentsInChildren<UiChipView>(true);
             for (var i = 0; i < chips.Length; i++)
@@ -243,6 +244,42 @@ namespace UIP.UI
                     group.padding = padding;
                 }
             }
+        }
+
+        /// <summary>
+        /// TMP labels are not raycast targets, so empty gaps and text never hit the
+        /// ScrollRect unless Content and Viewport have a transparent Image.
+        /// </summary>
+        static void EnsureScrollRaycasts(Transform root)
+        {
+            var scrolls = root.GetComponentsInChildren<ScrollRect>(true);
+            foreach (var scroll in scrolls)
+            {
+                if (scroll == null)
+                {
+                    continue;
+                }
+
+                EnsureRaycastImage(scroll.viewport);
+                EnsureRaycastImage(scroll.content);
+            }
+        }
+
+        static void EnsureRaycastImage(RectTransform rt)
+        {
+            if (rt == null)
+            {
+                return;
+            }
+
+            var image = rt.GetComponent<Image>();
+            if (image == null)
+            {
+                image = rt.gameObject.AddComponent<Image>();
+                image.color = Color.clear;
+            }
+
+            image.raycastTarget = true;
         }
     }
 }
