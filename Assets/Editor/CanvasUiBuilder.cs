@@ -7,6 +7,7 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UIP.App;
 using UIP.Core;
@@ -21,52 +22,61 @@ namespace UIP.EditorTools
 
         static TMP_FontAsset Font;
 
+        public const string SplashScenePath = "Assets/Scenes/0_SplashScene.unity";
+        public const string AppScenePath = "Assets/Scenes/1_AppScene.unity";
+
+        public static void BuildAll()
+        {
+            BuildSplashScene(SplashScenePath);
+            BuildAppScene(AppScenePath);
+            EnsureBuildSettings();
+        }
+
         public static void BuildScene(string scenePath)
+        {
+            if (scenePath != null && scenePath.Contains("0_SplashScene"))
+            {
+                BuildSplashScene(scenePath);
+                return;
+            }
+
+            BuildAppScene(scenePath);
+        }
+
+        public static void BuildSplashScene(string scenePath)
+        {
+            Font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+            var scene = PrepareEmptyScene(scenePath);
+            EnsureEventSystem();
+
+            var splashGo = new GameObject("Splash");
+            var bootstrap = splashGo.AddComponent<SplashBootstrap>();
+            var canvasGo = CreateRootCanvas();
+            var canvas = canvasGo.GetComponent<Canvas>();
+            var safe = CreateSafeArea(canvasGo.transform);
+
+            var continueBtn = BuildFullScreenDisclaimer(safe.transform);
+            bootstrap.Wire(continueBtn, canvas);
+
+            SaveScene(scene, "UIP splash scene setup complete.");
+        }
+
+        public static void BuildAppScene(string scenePath)
         {
             EnsureFolder("Assets/UI");
             EnsureFolder(PrefabFolder);
             Font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
 
-            var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
-            foreach (var root in scene.GetRootGameObjects())
-            {
-                if (root.name != "Main Camera")
-                {
-                    UnityEngine.Object.DestroyImmediate(root);
-                }
-            }
-
-            var camera = UnityEngine.Object.FindFirstObjectByType<Camera>();
-            if (camera != null)
-            {
-                camera.backgroundColor = UiTheme.Bg;
-                camera.clearFlags = CameraClearFlags.SolidColor;
-                camera.orthographic = true;
-            }
-
+            var scene = PrepareEmptyScene(scenePath);
             EnsureEventSystem();
 
             var appGo = new GameObject("App");
             var bootstrap = appGo.AddComponent<AppBootstrap>();
             var router = appGo.AddComponent<ScreenRouter>();
 
-            var canvasGo = CreateUIObject("Canvas", null);
-            var canvas = canvasGo.AddComponent<Canvas>();
-            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-            var scaler = canvasGo.AddComponent<CanvasScaler>();
-            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-            scaler.referenceResolution = new Vector2(390, 844);
-            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
-            scaler.matchWidthOrHeight = 0.5f;
-            canvasGo.AddComponent<GraphicRaycaster>();
-            canvasGo.AddComponent<TmpUiFixer>();
-            var canvasBg = canvasGo.AddComponent<Image>();
-            canvasBg.color = UiTheme.Bg;
-            canvasBg.raycastTarget = false;
-
-            var safe = CreateUIObject("SafeArea", canvasGo.transform);
-            Stretch(safe.GetComponent<RectTransform>());
-            safe.AddComponent<SafeAreaFitter>();
+            var canvasGo = CreateRootCanvas();
+            var canvas = canvasGo.GetComponent<Canvas>();
+            var safe = CreateSafeArea(canvasGo.transform);
 
             var screenHost = CreateUIObject("ScreenHost", safe.transform);
             var screenHostRt = screenHost.GetComponent<RectTransform>();
@@ -86,7 +96,6 @@ namespace UIP.EditorTools
 
             var screens = new System.Collections.Generic.List<UiScreen>
             {
-                BuildSplash(screenHost.transform),
                 BuildOnboarding(screenHost.transform),
                 BuildHome(screenHost.transform),
                 BuildLearn(screenHost.transform, pathRowPrefab),
@@ -101,11 +110,7 @@ namespace UIP.EditorTools
                 BuildProgress(screenHost.transform, weakRowPrefab, activityRowPrefab),
                 BuildBookmarks(screenHost.transform, questionRowPrefab),
                 BuildMistakes(screenHost.transform, mistakeRowPrefab),
-                BuildMistakeDetail(screenHost.transform),
-                BuildSettings(screenHost.transform),
-                BuildAbout(screenHost.transform),
-                BuildDisclaimer(screenHost.transform),
-                BuildPrivacy(screenHost.transform)
+                BuildMistakeDetail(screenHost.transform)
             };
 
             var nav = BuildNavBar(safe.transform);
@@ -113,11 +118,73 @@ namespace UIP.EditorTools
             router.SetScreens(screens);
             bootstrap.Wire(router, nav, safe.GetComponent<RectTransform>(), canvas);
 
+            SaveScene(scene, "UIP app scene setup complete.");
+        }
+
+        static Scene PrepareEmptyScene(string scenePath)
+        {
+            var scene = EditorSceneManager.OpenScene(scenePath, OpenSceneMode.Single);
+            foreach (var root in scene.GetRootGameObjects())
+            {
+                if (root.name != "Main Camera")
+                {
+                    UnityEngine.Object.DestroyImmediate(root);
+                }
+            }
+
+            var camera = UnityEngine.Object.FindFirstObjectByType<Camera>();
+            if (camera != null)
+            {
+                camera.backgroundColor = UiTheme.Bg;
+                camera.clearFlags = CameraClearFlags.SolidColor;
+                camera.orthographic = true;
+            }
+
+            return scene;
+        }
+
+        static GameObject CreateRootCanvas()
+        {
+            var canvasGo = CreateUIObject("Canvas", null);
+            var canvas = canvasGo.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            var scaler = canvasGo.AddComponent<CanvasScaler>();
+            scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+            scaler.referenceResolution = new Vector2(390, 844);
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+            scaler.matchWidthOrHeight = 0.5f;
+            canvasGo.AddComponent<GraphicRaycaster>();
+            canvasGo.AddComponent<TmpUiFixer>();
+            var canvasBg = canvasGo.AddComponent<Image>();
+            canvasBg.color = UiTheme.Bg;
+            canvasBg.raycastTarget = false;
+            return canvasGo;
+        }
+
+        static GameObject CreateSafeArea(Transform canvas)
+        {
+            var safe = CreateUIObject("SafeArea", canvas);
+            Stretch(safe.GetComponent<RectTransform>());
+            safe.AddComponent<SafeAreaFitter>();
+            return safe;
+        }
+
+        static void SaveScene(Scene scene, string message)
+        {
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
-            Debug.Log("UIP Canvas UI setup complete.");
+            Debug.Log(message);
+        }
+
+        static void EnsureBuildSettings()
+        {
+            EditorBuildSettings.scenes = new[]
+            {
+                new EditorBuildSettingsScene(SplashScenePath, true),
+                new EditorBuildSettingsScene(AppScenePath, true)
+            };
         }
 
         static void EnsureEventSystem()
@@ -132,22 +199,35 @@ namespace UIP.EditorTools
             es.AddComponent<InputSystemUIInputModule>();
         }
 
-        static UiScreen BuildSplash(Transform host)
+        static Button BuildFullScreenDisclaimer(Transform host)
         {
-            var root = CreatePanel(host, "SplashPanel", AppScreen.Splash, out var screenGo);
-            var content = CreateScrollContent(root.transform, out _);
-            var logo = CreateImage("Logo", content, new Vector2(160, 160));
-            logo.preserveAspect = true;
-            var logoSprite = AssetDatabase.LoadAssetAtPath<Sprite>("Assets/Resources/UI/AppLogo.png");
-            if (logoSprite != null) logo.sprite = logoSprite;
-            CreateLabel("Title", content, "Unity Interview Prep", 28, true, UiTheme.Text);
-            CreateLabel("Sub", content, "Learn · Practice · Test · Improve", 14, false, UiTheme.Accent);
-            CreateLabel("Body", content, "Independent educational resource for Unity developers. Offline-first study tools with adaptive recommendations.", 13, false, UiTheme.TextMuted);
-            var continueBtn = CreateButton("ContinueButton", content, "Continue", true);
-            var screen = screenGo.AddComponent<SplashScreen>();
-            screen.Configure(AppScreen.Splash);
-            screen.Wire(continueBtn, logo);
-            return screen;
+            var root = CreateUIObject("DisclaimerPanel", host);
+            Stretch(root.GetComponent<RectTransform>());
+
+            var scrollContent = CreateScrollContent(root.transform, out var scroll);
+            var scrollRt = scroll.GetComponent<RectTransform>();
+            Stretch(scrollRt, 24, 24, 24, 88);
+
+            CreateLabel("Title", scrollContent, "Disclaimer", 28, true, UiTheme.Text);
+            CreateLabel("Body1", scrollContent, "Unity is a trademark of Unity Technologies. This application is an independent educational resource and is not affiliated with, endorsed by, or sponsored by Unity Technologies.", 15, false, UiTheme.TextMuted);
+            CreateLabel("Body2", scrollContent, "Do not interpret this app as an official Unity certification product, official exam prep from Unity Technologies, or authorized training-partner material.", 15, false, UiTheme.TextMuted);
+            CreateLabel("Body3", scrollContent, "Educational explanations and sample code inside the app are original. They are intended to help candidates practice interviews and are not a substitute for official documentation.", 15, false, UiTheme.TextMuted);
+            CreateLabel("Body4", scrollContent, "Interview outcomes depend on many factors beyond this app. Content is for education and practice only.", 15, false, UiTheme.TextMuted);
+
+            var continueGo = CreateUIObject("ContinueButton", root.transform);
+            var continueRt = continueGo.GetComponent<RectTransform>();
+            continueRt.anchorMin = new Vector2(0, 0);
+            continueRt.anchorMax = new Vector2(1, 0);
+            continueRt.pivot = new Vector2(0.5f, 0);
+            continueRt.sizeDelta = new Vector2(-48, 52);
+            continueRt.anchoredPosition = new Vector2(0, 24);
+            var img = continueGo.AddComponent<Image>();
+            img.color = UiTheme.Accent;
+            var btn = continueGo.AddComponent<Button>();
+            var text = CreateLabel("Label", continueGo.transform, "Continue", 16, true, UiTheme.OnAccent);
+            text.alignment = TextAlignmentOptions.Center;
+            Stretch(text.rectTransform);
+            return btn;
         }
 
         static UiScreen BuildOnboarding(Transform host)
@@ -193,7 +273,6 @@ namespace UIP.EditorTools
             var flashcards = CreateButton("Flashcards", quick, "Review flashcards", false);
             var mistakes = CreateButton("Mistakes", quick, "Common mistakes", false);
             var bookmarks = CreateButton("Bookmarks", quick, "Bookmarks", false);
-            var settings = CreateButton("Settings", quick, "Settings", false);
 
             var resumeMockCard = CreateCard("ResumeMockCard", content);
             CreateLabel("ResumeMockTitle", resumeMockCard, "Interrupted mock interview", 16, true, UiTheme.Text);
@@ -202,7 +281,7 @@ namespace UIP.EditorTools
 
             var screen = screenGo.AddComponent<HomeScreen>();
             screen.Configure(AppScreen.Home);
-            screen.Wire(streak, continueBody, resumeQ, weakBody, practiceWeak, startMock, flashcards, mistakes, bookmarks, settings, resumeMockCard.gameObject, resumeMock);
+            screen.Wire(streak, continueBody, resumeQ, weakBody, practiceWeak, startMock, flashcards, mistakes, bookmarks, resumeMockCard.gameObject, resumeMock);
             return screen;
         }
 
@@ -487,76 +566,6 @@ namespace UIP.EditorTools
             return screen;
         }
 
-        static UiScreen BuildSettings(Transform host)
-        {
-            var root = CreatePanel(host, "SettingsPanel", AppScreen.Settings, out var screenGo);
-            var content = CreateScrollContent(root.transform, out _);
-            CreateLabel("Title", content, "Settings", 24, true, UiTheme.Text);
-            var version = CreateLabel("Version", content, "", 13, false, UiTheme.TextMuted);
-            var goal = CreateLabel("Goal", content, "", 12, false, UiTheme.TextMuted);
-            var goals = CreateWrapRow("Goals", content);
-            var g3 = CreateButton("Goal3", goals.transform, "3/day", false);
-            var g5 = CreateButton("Goal5", goals.transform, "5/day", true);
-            var g10 = CreateButton("Goal10", goals.transform, "10/day", false);
-            var reduced = CreateButton("ReducedMotion", content, "Reduced motion: Off", false);
-            var reducedLabel = reduced.GetComponentInChildren<TMP_Text>();
-            var haptics = CreateButton("Haptics", content, "Haptics: On", false);
-            var hapticsLabel = haptics.GetComponentInChildren<TMP_Text>();
-            var about = CreateButton("About", content, "About", false);
-            var disclaimer = CreateButton("Disclaimer", content, "Disclaimer", false);
-            var privacy = CreateButton("Privacy", content, "Privacy", false);
-            var export = CreateButton("Export", content, "Export local summary", false);
-            var reset = CreateButton("Reset", content, "Reset all progress", true);
-            var screen = screenGo.AddComponent<SettingsScreen>();
-            screen.Configure(AppScreen.Settings);
-            screen.Wire(version, goal, g3, g5, g10, reduced, reducedLabel, haptics, hapticsLabel, about, disclaimer, privacy, export, reset);
-            return screen;
-        }
-
-        static UiScreen BuildAbout(Transform host)
-        {
-            var root = CreatePanel(host, "AboutPanel", AppScreen.About, out var screenGo);
-            var content = CreateScrollContent(root.transform, out _);
-            var back = CreateButton("Back", content, "← Back", false);
-            CreateLabel("Title", content, "About", 24, true, UiTheme.Text);
-            CreateLabel("Body", content, "Unity Interview Prep by Gold Box helps candidates prepare for Unity developer interviews with original educational content, timed mock interviews, flashcards, and progress analytics.", 13, false, UiTheme.TextMuted);
-            var version = CreateLabel("Version", content, "", 13, false, UiTheme.TextMuted);
-            CreateLabel("Original", content, "All explanations and sample code are original educational material. They are not copied from Unity Manual, Scripting API, or Unity Learn.", 13, false, UiTheme.TextMuted);
-            var disclaimer = CreateButton("Disclaimer", content, "View disclaimer", false);
-            var screen = screenGo.AddComponent<AboutScreen>();
-            screen.Configure(AppScreen.About);
-            screen.Wire(back, version, disclaimer);
-            return screen;
-        }
-
-        static UiScreen BuildDisclaimer(Transform host)
-        {
-            var root = CreatePanel(host, "DisclaimerPanel", AppScreen.Disclaimer, out var screenGo);
-            var content = CreateScrollContent(root.transform, out _);
-            var back = CreateButton("Back", content, "← Back", false);
-            CreateLabel("Title", content, "Disclaimer", 24, true, UiTheme.Text);
-            CreateLabel("Body1", content, "Unity is a trademark of Unity Technologies. This application is an independent educational resource and is not affiliated with, endorsed by, or sponsored by Unity Technologies.", 13, false, UiTheme.TextMuted);
-            CreateLabel("Body2", content, "Interview outcomes depend on many factors beyond this app. Content is for education and practice only.", 13, false, UiTheme.TextMuted);
-            var screen = screenGo.AddComponent<DisclaimerScreen>();
-            screen.Configure(AppScreen.Disclaimer);
-            screen.Wire(back);
-            return screen;
-        }
-
-        static UiScreen BuildPrivacy(Transform host)
-        {
-            var root = CreatePanel(host, "PrivacyPanel", AppScreen.Privacy, out var screenGo);
-            var content = CreateScrollContent(root.transform, out _);
-            var back = CreateButton("Back", content, "← Back", false);
-            CreateLabel("Title", content, "Privacy", 24, true, UiTheme.Text);
-            CreateLabel("Body1", content, "This MVP stores progress only on your device (Application.persistentDataPath). It does not require an account and does not include ads or third-party analytics SDKs.", 13, false, UiTheme.TextMuted);
-            CreateLabel("Body2", content, "You can reset progress or copy a local summary export from Settings. No personal identity data is collected by the app itself.", 13, false, UiTheme.TextMuted);
-            var screen = screenGo.AddComponent<PrivacyScreen>();
-            screen.Configure(AppScreen.Privacy);
-            screen.Wire(back);
-            return screen;
-        }
-
         static NavBarView BuildNavBar(Transform parent)
         {
             var bar = CreateUIObject("NavBar", parent);
@@ -767,18 +776,6 @@ namespace UIP.EditorTools
             fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             return tmp;
-        }
-
-        static Image CreateImage(string name, Transform parent, Vector2 size)
-        {
-            var go = CreateUIObject(name, parent);
-            var img = go.AddComponent<Image>();
-            img.color = Color.white;
-            var le = go.AddComponent<LayoutElement>();
-            le.preferredWidth = size.x;
-            le.preferredHeight = size.y;
-            le.minHeight = size.y;
-            return img;
         }
 
         static GameObject BuildChipPrefab()

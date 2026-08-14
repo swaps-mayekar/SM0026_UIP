@@ -34,7 +34,6 @@ namespace UIP.Core
 
     public enum AppScreen
     {
-        Splash,
         Onboarding,
         Home,
         Learn,
@@ -49,10 +48,6 @@ namespace UIP.Core
         Progress,
         Bookmarks,
         CommonMistakes,
-        MistakeDetail,
-        Settings,
-        About,
-        Privacy,
-        Disclaimer
+        MistakeDetail
     }
 }

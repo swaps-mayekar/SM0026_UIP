@@ -1,17 +1,14 @@
 #if UNITY_EDITOR
-using System.Linq;
+using System.IO;
 using UnityEditor;
-using UnityEditor.SceneManagement;
 using UnityEngine;
-using UIP.UI;
 
 namespace UIP.EditorTools
 {
     [InitializeOnLoad]
     public static class CanvasUiAutoSetup
     {
-        const string ScenePath = "Assets/Scenes/0_SplashScene.unity";
-        const string FlagKey = "UIP.CanvasUi.AutoSetupAttempted";
+        const string FlagKey = "UIP.CanvasUi.DisclaimerSplash.v1";
 
         static CanvasUiAutoSetup()
         {
@@ -32,21 +29,28 @@ namespace UIP.EditorTools
 
             SessionState.SetBool(FlagKey, true);
 
-            var scene = EditorSceneManager.GetActiveScene();
-            if (!scene.path.EndsWith("0_SplashScene.unity"))
+            var splashText = File.Exists(CanvasUiBuilder.SplashScenePath)
+                ? File.ReadAllText(CanvasUiBuilder.SplashScenePath)
+                : string.Empty;
+            var appText = File.Exists(CanvasUiBuilder.AppScenePath)
+                ? File.ReadAllText(CanvasUiBuilder.AppScenePath)
+                : string.Empty;
+
+            var splashOk = splashText.Contains("SplashBootstrap")
+                && !splashText.Contains("SettingsPanel")
+                && !splashText.Contains("HomePanel");
+            var appOk = appText.Contains("AppBootstrap")
+                && appText.Contains("HomePanel")
+                && !appText.Contains("SettingsPanel")
+                && !appText.Contains("SplashPanel");
+
+            if (splashOk && appOk)
             {
                 return;
             }
 
-            var screens = Object.FindObjectsByType<UiScreen>(FindObjectsInactive.Include, FindObjectsSortMode.None);
-            var expected = System.Enum.GetValues(typeof(UIP.Core.AppScreen)).Length;
-            if (screens.Length >= expected)
-            {
-                return;
-            }
-
-            Debug.Log("UIP: Canvas UI screens missing — running Setup Canvas UI automatically.");
-            CanvasUiBuilder.BuildScene(ScenePath);
+            Debug.Log("UIP: Rebuilding splash disclaimer and app scenes.");
+            CanvasUiBuilder.BuildAll();
         }
     }
 }

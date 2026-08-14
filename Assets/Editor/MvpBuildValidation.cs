@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.UI;
+using UIP.App;
 using UIP.Content;
 using UIP.Core;
 using UIP.UI;
@@ -44,21 +45,48 @@ namespace UIP.EditorTools
                 throw new InvalidOperationException("Expected at least 75 questions.");
             }
 
-            var scene = EditorSceneManager.OpenScene("Assets/Scenes/0_SplashScene.unity", OpenSceneMode.Single);
-            var bootstrap = UnityEngine.Object.FindFirstObjectByType<UIP.App.AppBootstrap>();
+            var splash = EditorSceneManager.OpenScene(CanvasUiBuilder.SplashScenePath, OpenSceneMode.Single);
+            if (UnityEngine.Object.FindFirstObjectByType<SplashBootstrap>() == null)
+            {
+                throw new InvalidOperationException("SplashBootstrap missing from splash scene.");
+            }
+
+            var splashCanvas = UnityEngine.Object.FindFirstObjectByType<Canvas>();
+            if (splashCanvas == null)
+            {
+                throw new InvalidOperationException("Canvas missing from splash scene. Run UIP/Setup Canvas UI.");
+            }
+
+            if (UnityEngine.Object.FindFirstObjectByType<Button>() == null)
+            {
+                throw new InvalidOperationException("Continue button missing from splash disclaimer.");
+            }
+
+            if (UnityEngine.Object.FindFirstObjectByType<NavBarView>() != null)
+            {
+                throw new InvalidOperationException("Splash scene should not contain a nav bar.");
+            }
+
+            if (UnityEngine.Object.FindFirstObjectByType<UiScreen>(FindObjectsInactive.Include) != null)
+            {
+                throw new InvalidOperationException("Splash scene should only contain the full-screen disclaimer.");
+            }
+
+            var app = EditorSceneManager.OpenScene(CanvasUiBuilder.AppScenePath, OpenSceneMode.Single);
+            var bootstrap = UnityEngine.Object.FindFirstObjectByType<AppBootstrap>();
             if (bootstrap == null)
             {
-                throw new InvalidOperationException("AppBootstrap missing from splash scene.");
+                throw new InvalidOperationException("AppBootstrap missing from app scene.");
             }
 
             var canvas = UnityEngine.Object.FindFirstObjectByType<Canvas>();
             if (canvas == null)
             {
-                throw new InvalidOperationException("Canvas missing from splash scene. Run UIP/Setup Canvas UI.");
+                throw new InvalidOperationException("Canvas missing from app scene. Run UIP/Setup Canvas UI.");
             }
 
             var screens = Resources.FindObjectsOfTypeAll<UiScreen>()
-                .Where(s => s != null && s.gameObject.scene.IsValid() && s.gameObject.scene.path.Contains("0_SplashScene"))
+                .Where(s => s != null && s.gameObject.scene.IsValid() && s.gameObject.scene.path.Contains("1_AppScene"))
                 .ToList();
             var expected = Enum.GetValues(typeof(AppScreen)).Length;
             if (screens.Count < expected)
@@ -76,7 +104,17 @@ namespace UIP.EditorTools
 
             if (UnityEngine.Object.FindFirstObjectByType<NavBarView>() == null)
             {
-                throw new InvalidOperationException("NavBarView missing from splash scene.");
+                throw new InvalidOperationException("NavBarView missing from app scene.");
+            }
+
+            var buildScenes = EditorBuildSettings.scenes
+                .Where(s => s.enabled)
+                .Select(s => s.path)
+                .ToArray();
+            if (!buildScenes.Contains(CanvasUiBuilder.SplashScenePath) ||
+                !buildScenes.Contains(CanvasUiBuilder.AppScenePath))
+            {
+                throw new InvalidOperationException("Build settings must include splash then app scene.");
             }
 
             if (PlayerSettings.productName != "Unity Interview Prep")
@@ -94,7 +132,7 @@ namespace UIP.EditorTools
                 throw new InvalidOperationException("Missing App Store review notes.");
             }
 
-            Debug.Log($"Validated content v{repo.ContentVersion} with {repo.Questions.Count} questions, scene '{scene.path}', {screens.Count} screens.");
+            Debug.Log($"Validated content v{repo.ContentVersion} with {repo.Questions.Count} questions, splash '{splash.path}', app '{app.path}', {screens.Count} screens.");
         }
     }
 }

@@ -25,14 +25,13 @@ Interactive state is persisted locally and drives recommendations on Home.
 
 ## Review navigation
 
-1. Launch → Splash / onboarding disclaimer
+1. Launch → full-screen disclaimer → Continue to app
 2. Home → Continue card, weak-topic recommendation, mock CTA
 3. Learn → open a path → mark a module complete
 4. Practice → filter by topic/difficulty → reveal answer → self-rate
 5. Mock → start 5-question session → reveal → rate → summary
 6. Flashcards → review due cards with Again/Hard/Good
 7. Progress → stats + weak topics
-8. Settings → About / Disclaimer / Privacy / reset
 
 ## Content ownership
 
@@ -49,7 +48,7 @@ Facts about public APIs are explained in original wording with original examples
 
 Product name currently: **Unity Interview Prep**
 
-In-app disclaimer (About / onboarding):
+In-app disclaimer (launch splash):
 
 > Unity is a trademark of Unity Technologies. This application is an independent educational resource and is not affiliated with, endorsed by, or sponsored by Unity Technologies.
 

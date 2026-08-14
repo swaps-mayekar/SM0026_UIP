@@ -16,7 +16,6 @@ namespace UIP.UI
         [SerializeField] Button flashcardsButton;
         [SerializeField] Button mistakesButton;
         [SerializeField] Button bookmarksButton;
-        [SerializeField] Button settingsButton;
         [SerializeField] GameObject resumeMockCard;
         [SerializeField] Button resumeMockButton;
 
@@ -33,7 +32,6 @@ namespace UIP.UI
             Button flashcards,
             Button mistakes,
             Button bookmarks,
-            Button settings,
             GameObject resumeMockRoot,
             Button resumeMock)
         {
@@ -46,7 +44,6 @@ namespace UIP.UI
             flashcardsButton = flashcards;
             mistakesButton = mistakes;
             bookmarksButton = bookmarks;
-            settingsButton = settings;
             resumeMockCard = resumeMockRoot;
             resumeMockButton = resumeMock;
         }
@@ -72,7 +69,6 @@ namespace UIP.UI
             BindButton(flashcardsButton, () => Go(AppScreen.Flashcards));
             BindButton(mistakesButton, () => Go(AppScreen.CommonMistakes));
             BindButton(bookmarksButton, () => Go(AppScreen.Bookmarks));
-            BindButton(settingsButton, () => Go(AppScreen.Settings));
             BindButton(resumeMockButton, () => Router.ResumeMock());
         }
 

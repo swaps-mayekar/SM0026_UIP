@@ -55,16 +55,12 @@ namespace UIP.UI
             }
 
             var current = _ctx.Navigation.Current;
-            var hide = current is AppScreen.Splash
-                or AppScreen.Onboarding
+            var hide = current is AppScreen.Onboarding
                 or AppScreen.MockSession
                 or AppScreen.QuestionDetail
                 or AppScreen.FlashcardSession
                 or AppScreen.LearnPathDetail
-                or AppScreen.MistakeDetail
-                or AppScreen.About
-                or AppScreen.Privacy
-                or AppScreen.Disclaimer;
+                or AppScreen.MistakeDetail;
 
             gameObject.SetActive(!hide);
             if (hide)
@@ -76,7 +72,7 @@ namespace UIP.UI
             SetActive(learnLabel, IsActive(current, AppScreen.Learn, AppScreen.LearnPathDetail, AppScreen.CommonMistakes, AppScreen.Flashcards));
             SetActive(practiceLabel, IsActive(current, AppScreen.Practice, AppScreen.QuestionDetail, AppScreen.Bookmarks));
             SetActive(mockLabel, IsActive(current, AppScreen.MockSetup, AppScreen.MockSession, AppScreen.MockSummary));
-            SetActive(progressLabel, IsActive(current, AppScreen.Progress, AppScreen.Settings));
+            SetActive(progressLabel, IsActive(current, AppScreen.Progress));
         }
 
         void BindNav(Button button, AppScreen screen)

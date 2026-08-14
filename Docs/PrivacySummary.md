@@ -19,7 +19,6 @@ Unity Interview Prep (Gold Box) stores learning progress on-device only for this
 
 ## Controls
 
-- Reset all progress in Settings
-- Copy a local JSON summary export from Settings
+Progress is stored only on this device. Deleting the app removes local progress. No personal identity data is collected by the app itself.
 
 If future versions add cloud sync, accounts, or analytics, this document and the store privacy nutrition labels will be updated before shipping that change.

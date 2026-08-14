@@ -19,7 +19,11 @@ namespace UIP.EditorTools
                 PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.goldbox.uip");
                 var options = new BuildPlayerOptions
                 {
-                    scenes = new[] { "Assets/Scenes/0_SplashScene.unity" },
+                    scenes = new[]
+                    {
+                        "Assets/Scenes/0_SplashScene.unity",
+                        "Assets/Scenes/1_AppScene.unity"
+                    },
                     locationPathName = outDir,
                     target = BuildTarget.iOS,
                     options = BuildOptions.Development

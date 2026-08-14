@@ -6,8 +6,6 @@ namespace UIP.EditorTools
 {
     public static class MvpProjectSetup
     {
-        const string ScenePath = "Assets/Scenes/0_SplashScene.unity";
-
         [MenuItem("UIP/Setup Canvas UI")]
         public static void SetupFromMenu()
         {
@@ -22,7 +20,7 @@ namespace UIP.EditorTools
 
         public static void Setup()
         {
-            CanvasUiBuilder.BuildScene(ScenePath);
+            CanvasUiBuilder.BuildAll();
         }
 
         [MenuItem("UIP/Batch/Setup MVP")]

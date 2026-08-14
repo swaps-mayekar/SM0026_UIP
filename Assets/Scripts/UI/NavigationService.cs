@@ -5,7 +5,7 @@ namespace UIP.UI
 {
     public sealed class NavigationService
     {
-        AppScreen _current = AppScreen.Splash;
+        AppScreen _current = AppScreen.Home;
         string _selectedPathId;
         string _selectedQuestionId;
         string _selectedMistakeId;

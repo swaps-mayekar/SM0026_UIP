@@ -69,7 +69,7 @@ namespace UIP.App
 
             if (!_context.Profile.onboardingCompleted)
             {
-                _context.Navigation.Go(AppScreen.Splash);
+                _context.Navigation.Go(AppScreen.Onboarding);
             }
             else
             {
