@@ -58,6 +58,7 @@ namespace UIP.UI
             }
 
             StretchVerticalColumns(root);
+            PadScrollPanels(root);
             Canvas.ForceUpdateCanvases();
         }
 
@@ -78,6 +79,36 @@ namespace UIP.UI
                 group.childControlWidth = true;
                 group.childForceExpandWidth = true;
                 group.childForceExpandHeight = false;
+            }
+        }
+
+        /// <summary>
+        /// ScrollRect overwrites content anchoredPosition, so a top offset is lost.
+        /// Layout padding keeps Back and titles off the screen edge.
+        /// </summary>
+        static void PadScrollPanels(Transform root)
+        {
+            const int TopPadding = 10;
+            var scrolls = root.GetComponentsInChildren<ScrollRect>(true);
+            foreach (var scroll in scrolls)
+            {
+                if (scroll == null || scroll.content == null)
+                {
+                    continue;
+                }
+
+                var group = scroll.content.GetComponent<VerticalLayoutGroup>();
+                if (group == null)
+                {
+                    continue;
+                }
+
+                var padding = group.padding;
+                if (padding.top < TopPadding)
+                {
+                    padding.top = TopPadding;
+                    group.padding = padding;
+                }
             }
         }
     }
