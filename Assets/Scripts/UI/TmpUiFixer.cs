@@ -22,7 +22,7 @@ namespace UIP.UI
                 return;
             }
 
-            var font = TMP_Settings.defaultFontAsset;
+            var bodyFont = TMP_Settings.defaultFontAsset;
             var labels = root.GetComponentsInChildren<TextMeshProUGUI>(true);
             foreach (var tmp in labels)
             {
@@ -39,18 +39,22 @@ namespace UIP.UI
                     tmp.overflowMode = TextOverflowModes.Overflow;
                 }
 
-                if (font != null)
+                if (UiFonts.IsTitleOrButtonText(tmp))
                 {
-                    tmp.font = font;
+                    UiFonts.ApplyTitleFont(tmp);
+                }
+                else if (bodyFont != null)
+                {
+                    tmp.font = bodyFont;
                 }
             }
 
             var inputs = root.GetComponentsInChildren<TMP_InputField>(true);
             foreach (var input in inputs)
             {
-                if (input != null && font != null)
+                if (input != null && bodyFont != null)
                 {
-                    input.fontAsset = font;
+                    input.fontAsset = bodyFont;
                 }
             }
 

@@ -51,7 +51,22 @@ namespace UIP.Features
             return state;
         }
 
-        public MockSessionState ResumeOrNull() => _progress.Profile.activeMock;
+        public MockSessionState ResumeOrNull()
+        {
+            var state = _progress.Profile.activeMock;
+            if (state == null)
+            {
+                return null;
+            }
+
+            if (!state.IsResumable)
+            {
+                _progress.ClearActiveMock();
+                return null;
+            }
+
+            return state;
+        }
 
         public void Tick(MockSessionState state, float deltaSeconds)
         {

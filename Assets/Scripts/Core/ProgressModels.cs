@@ -27,6 +27,8 @@ namespace UIP.Core
         public List<ActivityEvent> recentActivity = new List<ActivityEvent>();
         public bool reducedMotion;
         public bool hapticsEnabled = true;
+
+        public bool HasResumableMock => activeMock != null && activeMock.IsResumable;
     }
 
     [Serializable]
@@ -89,6 +91,13 @@ namespace UIP.Core
         public List<SelfRating> ratings = new List<SelfRating>();
         public List<ConfidenceLevel> confidences = new List<ConfidenceLevel>();
         public string startedIso;
+
+        public bool IsResumable =>
+            !string.IsNullOrEmpty(sessionId)
+            && questionIds != null
+            && questionIds.Count > 0
+            && currentIndex >= 0
+            && currentIndex < questionIds.Count;
     }
 
     [Serializable]

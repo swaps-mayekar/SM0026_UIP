@@ -36,7 +36,7 @@ namespace UIP.UI
         public override void Refresh()
         {
             SetText(prefsLabel, $"Preferred length: {Ctx.Profile.preferredMockLength} · Think: {Ctx.Profile.preferredThinkSeconds}s");
-            SetActive(resumeButton, Ctx.Profile.activeMock != null);
+            SetActive(resumeButton, Ctx.Profile.HasResumableMock);
         }
     }
 }

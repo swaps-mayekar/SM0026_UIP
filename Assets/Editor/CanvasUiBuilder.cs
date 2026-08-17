@@ -19,8 +19,10 @@ namespace UIP.EditorTools
     {
         const string PrefabFolder = "Assets/UI/Prefabs";
         const string FontPath = "Assets/UI/Font/IBMPlexSans_Condensed-Bold SDF.asset";
+        const string TitleFontPath = "Assets/Resources/UI/Fonts/Inter_28pt-Black SDF.asset";
 
         static TMP_FontAsset Font;
+        static TMP_FontAsset TitleFont;
 
         public const string SplashScenePath = "Assets/Scenes/0_SplashScene.unity";
         public const string AppScenePath = "Assets/Scenes/1_AppScene.unity";
@@ -46,6 +48,7 @@ namespace UIP.EditorTools
         public static void BuildSplashScene(string scenePath)
         {
             Font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+            TitleFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(TitleFontPath);
             var scene = PrepareEmptyScene(scenePath);
             EnsureEventSystem();
 
@@ -66,6 +69,7 @@ namespace UIP.EditorTools
             EnsureFolder("Assets/UI");
             EnsureFolder(PrefabFolder);
             Font = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(FontPath);
+            TitleFont = AssetDatabase.LoadAssetAtPath<TMP_FontAsset>(TitleFontPath);
 
             var scene = PrepareEmptyScene(scenePath);
             EnsureEventSystem();
@@ -337,7 +341,7 @@ namespace UIP.EditorTools
             var content = CreateScrollContent(root.transform, out _);
             var back = CreateButton("Back", content, "← Back", false);
             var topic = CreateLabel("Topic", content, "", 12, false, UiTheme.TextMuted);
-            var difficulty = CreateLabel("Difficulty", content, "", 12, true, UiTheme.Accent);
+            var difficulty = CreateLabel("Difficulty", content, "", 12, false, UiTheme.Accent);
             CreateLabel("Heading", content, "Interview question", 24, true, UiTheme.Text);
             var prompt = CreateLabel("Prompt", content, "", 14, false, UiTheme.Text);
             var meta = CreateLabel("Meta", content, "", 12, false, UiTheme.TextMuted);
@@ -390,8 +394,8 @@ namespace UIP.EditorTools
             var root = CreatePanel(host, "MockSessionPanel", AppScreen.MockSession, out var screenGo);
             var content = CreateScrollContent(root.transform, out _);
             var progress = CreateLabel("Progress", content, "", 12, false, UiTheme.TextMuted);
-            var timer = CreateLabel("Timer", content, "0:00", 40, true, UiTheme.Accent);
-            var difficulty = CreateLabel("Difficulty", content, "", 12, true, UiTheme.Accent);
+            var timer = CreateLabel("Timer", content, "0:00", 40, false, UiTheme.Accent);
+            var difficulty = CreateLabel("Difficulty", content, "", 12, false, UiTheme.Accent);
             var prompt = CreateLabel("Prompt", content, "", 14, false, UiTheme.Text);
             var pause = CreateButton("Pause", content, "Pause", false);
             var pauseLabel = pause.GetComponentInChildren<TMP_Text>();
@@ -419,7 +423,7 @@ namespace UIP.EditorTools
             var root = CreatePanel(host, "MockSummaryPanel", AppScreen.MockSummary, out var screenGo);
             var content = CreateScrollContent(root.transform, out _);
             CreateLabel("Title", content, "Mock summary", 24, true, UiTheme.Text);
-            var score = CreateLabel("Score", content, "—", 22, true, UiTheme.Accent);
+            var score = CreateLabel("Score", content, "—", 22, false, UiTheme.Accent);
             var meta = CreateLabel("Meta", content, "", 13, false, UiTheme.TextMuted);
             var list = CreateStretchColumn("List", content, 10);
             var home = CreateButton("Home", content, "Back to home", true);
@@ -494,7 +498,7 @@ namespace UIP.EditorTools
             TMP_Text MakeStat(string name, string label)
             {
                 var cell = CreateCard(name, grid.transform);
-                var value = CreateLabel("Value", cell, "0", 22, true, UiTheme.Accent);
+                var value = CreateLabel("Value", cell, "0", 22, false, UiTheme.Accent);
                 CreateLabel("Label", cell, label, 11, false, UiTheme.TextMuted);
                 return value;
             }
@@ -587,7 +591,7 @@ namespace UIP.EditorTools
                 var go = CreateUIObject(name, bar.transform);
                 var btn = go.AddComponent<Button>();
                 go.AddComponent<Image>().color = Color.clear;
-                var text = CreateLabel("Label", go.transform, label, 11, false, UiTheme.TextMuted);
+                var text = CreateLabel("Label", go.transform, label, 11, false, UiTheme.TextMuted, useTitleFont: true);
                 text.alignment = TextAlignmentOptions.Center;
                 var le = text.gameObject.AddComponent<LayoutElement>();
                 le.flexibleWidth = 1;
@@ -789,19 +793,20 @@ namespace UIP.EditorTools
             var le = go.AddComponent<LayoutElement>();
             le.minHeight = 44;
             le.preferredHeight = 44;
-            var text = CreateLabel("Label", go.transform, label, 14, true, primary ? UiTheme.OnAccent : UiTheme.Text);
+            var text = CreateLabel("Label", go.transform, label, 14, true, primary ? UiTheme.OnAccent : UiTheme.Text, useTitleFont: true);
             text.alignment = TextAlignmentOptions.Center;
             Stretch(text.rectTransform);
             return btn;
         }
 
-        static TMP_Text CreateLabel(string name, Transform parent, string value, float size, bool bold, Color color)
+        static TMP_Text CreateLabel(string name, Transform parent, string value, float size, bool title, Color color, bool useTitleFont = false)
         {
             var go = CreateUIObject(name, parent);
             var tmp = go.AddComponent<TextMeshProUGUI>();
-            tmp.font = Font;
+            var useInter = useTitleFont || title;
+            tmp.font = useInter ? TitleFont : Font;
             tmp.fontSize = size;
-            tmp.fontStyle = bold ? FontStyles.Bold : FontStyles.Normal;
+            tmp.fontStyle = FontStyles.Normal;
             tmp.color = color;
             tmp.text = value;
             tmp.enableWordWrapping = true;
@@ -834,7 +839,7 @@ namespace UIP.EditorTools
             le.preferredHeight = 32;
             le.minWidth = 48;
             le.flexibleWidth = 0;
-            var label = CreateLabel("Label", go.transform, "Chip", 12, false, UiTheme.Text);
+            var label = CreateLabel("Label", go.transform, "Chip", 12, false, UiTheme.Text, useTitleFont: true);
             label.alignment = TextAlignmentOptions.Center;
             label.enableWordWrapping = false;
             label.overflowMode = TextOverflowModes.Overflow;
@@ -872,7 +877,7 @@ namespace UIP.EditorTools
             var title = CreateLabel("Title", go.transform, "Title", 16, true, UiTheme.Text);
             var subtitle = CreateLabel("Subtitle", go.transform, "Subtitle", 12, false, UiTheme.TextMuted);
             var body = CreateLabel("Body", go.transform, "Body", 13, false, UiTheme.TextMuted);
-            var badge = CreateLabel("Badge", go.transform, "Badge", 11, true, UiTheme.Accent);
+            var badge = CreateLabel("Badge", go.transform, "Badge", 11, false, UiTheme.Accent);
             var track = CreateProgress("Progress", go.transform, out var fill);
             var row = go.AddComponent<UiSimpleRow>();
             row.Wire(btn, title, subtitle, body, badge, fill);
@@ -898,7 +903,7 @@ namespace UIP.EditorTools
             rowLe.flexibleWidth = 1;
             rowLe.minWidth = 0;
             var title = CreateLabel("Title", go.transform, "Lesson", 16, true, UiTheme.Text);
-            var badge = CreateLabel("Badge", go.transform, "5 min", 11, true, UiTheme.Accent);
+            var badge = CreateLabel("Badge", go.transform, "5 min", 11, false, UiTheme.Accent);
             var summary = CreateLabel("Summary", go.transform, "", 13, false, UiTheme.TextMuted);
             var body = CreateLabel("Body", go.transform, "", 13, false, UiTheme.TextMuted);
             var mark = CreateButton("MarkComplete", go.transform, "Mark complete", true);

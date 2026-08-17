@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
@@ -146,6 +147,25 @@ namespace UIP.Tests
         }
 
         [Test]
+        public void ResumeOrNull_Rejects_Empty_ActiveMock()
+        {
+            var fx = CreateFixture();
+            fx.Profile.activeMock = new MockSessionState();
+            Assert.IsFalse(fx.Profile.HasResumableMock);
+            Assert.IsNull(fx.Mock.ResumeOrNull());
+            Assert.IsNull(fx.Profile.activeMock);
+        }
+
+        [Test]
+        public void ResumeOrNull_Returns_InProgress_Session()
+        {
+            var fx = CreateFixture();
+            var session = fx.Mock.StartSession(3, 120);
+            Assert.IsTrue(fx.Profile.HasResumableMock);
+            Assert.AreSame(session, fx.Mock.ResumeOrNull());
+        }
+
+        [Test]
         public void Dashboard_Tracks_Bookmarks_And_Daily_Goal()
         {
             var fx = CreateFixture();
@@ -235,6 +255,70 @@ namespace UIP.Tests
             Assert.AreEqual(5, profile.dailyGoalQuestions);
             Assert.AreEqual(120, profile.preferredThinkSeconds);
             Assert.AreEqual("Candidate", profile.displayName);
+        }
+
+        [Test]
+        public void Null_ActiveMock_Does_Not_Deserialize_As_Resumable()
+        {
+            var dir = Path.Combine(Application.temporaryCachePath, "UIP_Test_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(dir);
+            try
+            {
+                var store = new ProfileStore(dir);
+                var profile = store.LoadOrCreate();
+                profile.activeMock = null;
+                store.Save(profile);
+
+                var loaded = store.LoadOrCreate();
+                Assert.IsNull(loaded.activeMock);
+                Assert.IsFalse(loaded.HasResumableMock);
+            }
+            finally
+            {
+                if (Directory.Exists(dir))
+                {
+                    Directory.Delete(dir, true);
+                }
+            }
+        }
+
+        [Test]
+        public void ActiveMock_RoundTrip_Preserves_QuestionIds()
+        {
+            var dir = Path.Combine(Application.temporaryCachePath, "UIP_Test_" + Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(dir);
+            try
+            {
+                var store = new ProfileStore(dir);
+                var profile = store.LoadOrCreate();
+                profile.activeMock = new MockSessionState
+                {
+                    sessionId = "session-1",
+                    thinkSeconds = 120,
+                    currentIndex = 1,
+                    remainingSeconds = 90f,
+                    questionIds = new List<string> { "q1", "q2", "q3" },
+                    ratings = new List<SelfRating> { SelfRating.Missed, SelfRating.Solid, SelfRating.Missed },
+                    confidences = new List<ConfidenceLevel> { ConfidenceLevel.None, ConfidenceLevel.High, ConfidenceLevel.None },
+                    startedIso = "2026-08-17T00:00:00Z"
+                };
+                store.Save(profile);
+
+                var loaded = store.LoadOrCreate();
+                Assert.IsNotNull(loaded.activeMock);
+                Assert.IsTrue(loaded.HasResumableMock);
+                Assert.AreEqual(3, loaded.activeMock.questionIds.Count);
+                Assert.AreEqual("q2", loaded.activeMock.questionIds[1]);
+                Assert.AreEqual(1, loaded.activeMock.currentIndex);
+                Assert.AreEqual(SelfRating.Solid, loaded.activeMock.ratings[1]);
+            }
+            finally
+            {
+                if (Directory.Exists(dir))
+                {
+                    Directory.Delete(dir, true);
+                }
+            }
         }
     }
 

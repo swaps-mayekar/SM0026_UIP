@@ -122,13 +122,20 @@ namespace UIP.UI
         {
             Router.LiveMock ??= Ctx.Mock.ResumeOrNull();
             var mock = Router.LiveMock;
-            if (mock == null)
+            if (mock == null || !mock.IsResumable)
             {
+                Router.LiveMock = null;
                 Go(AppScreen.MockSetup);
                 return;
             }
 
-            var q = Ctx.Content.GetQuestion(mock.questionIds[mock.currentIndex]);
+            if (!Ctx.Content.TryGetQuestion(mock.questionIds[mock.currentIndex], out var q))
+            {
+                Ctx.Mock.Abandon(mock);
+                Router.LiveMock = null;
+                Go(AppScreen.MockSetup);
+                return;
+            }
             SetText(progressLabel, $"Question {mock.currentIndex + 1} / {mock.questionIds.Count}");
             UpdateTimer(mock.remainingSeconds);
             SetText(difficultyLabel, ScoreUtil.DifficultyLabel(q.difficulty));

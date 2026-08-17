@@ -68,8 +68,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: Chip
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 01fa3820f61514ffa90756a609d277a1, type: 2}
-  m_sharedMaterial: {fileID: 9204232816759397769, guid: 01fa3820f61514ffa90756a609d277a1, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: e4b5502727a22469b8dde6e8fc71f825, type: 2}
+  m_sharedMaterial: {fileID: 7523316064872648337, guid: e4b5502727a22469b8dde6e8fc71f825, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

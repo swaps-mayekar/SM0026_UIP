@@ -84,7 +84,7 @@ namespace UIP.Persistence
                 continuePathId = data.continuePathId ?? "",
                 bookmarks = data.bookmarks ?? new List<string>(),
                 mockHistory = data.mockHistory ?? new List<MockSessionRecord>(),
-                activeMock = data.activeMock,
+                activeMock = data.activeMock != null && data.activeMock.IsResumable ? data.activeMock : null,
                 recentActivity = data.recentActivity ?? new List<ActivityEvent>(),
                 reducedMotion = data.reducedMotion,
                 hapticsEnabled = data.hapticsEnabled
@@ -259,7 +259,13 @@ namespace UIP.Persistence
                 profile.preferredMockLength = 5;
             }
 
+            profile.activeMock = SanitizeActiveMock(profile.activeMock);
             return profile;
+        }
+
+        static MockSessionState SanitizeActiveMock(MockSessionState state)
+        {
+            return state != null && state.IsResumable ? state : null;
         }
     }
 }

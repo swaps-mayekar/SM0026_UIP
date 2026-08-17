@@ -106,7 +106,7 @@ namespace UIP.UI
                 SetActive(practiceWeakButton, false);
             }
 
-            SetActive(resumeMockCard, Ctx.Profile.activeMock != null);
+            SetActive(resumeMockCard, Ctx.Profile.HasResumableMock);
         }
     }
 }
