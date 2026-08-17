@@ -308,7 +308,7 @@ namespace UIP.EditorTools
         {
             var root = CreatePanel(host, "LearnPathDetailPanel", AppScreen.LearnPathDetail, out var screenGo);
             var content = CreateScrollContent(root.transform, out _);
-            var back = CreateButton("Back", content, "← Back", false);
+            var back = CreateButton("Back", content, "Back", false);
             var title = CreateLabel("Title", content, "Path", 24, true, UiTheme.Text);
             var body = CreateLabel("Body", content, "", 13, false, UiTheme.TextMuted);
             CreateProgress("Progress", content, out var fill);
@@ -339,7 +339,7 @@ namespace UIP.EditorTools
         {
             var root = CreatePanel(host, "QuestionDetailPanel", AppScreen.QuestionDetail, out var screenGo);
             var content = CreateScrollContent(root.transform, out _);
-            var back = CreateButton("Back", content, "← Back", false);
+            var back = CreateButton("Back", content, "Back", false);
             var topic = CreateLabel("Topic", content, "", 12, false, UiTheme.TextMuted);
             var difficulty = CreateLabel("Difficulty", content, "", 12, false, UiTheme.Accent);
             CreateLabel("Heading", content, "Interview question", 24, true, UiTheme.Text);
@@ -452,7 +452,7 @@ namespace UIP.EditorTools
         {
             var root = CreatePanel(host, "FlashcardSessionPanel", AppScreen.FlashcardSession, out var screenGo);
             var content = CreateScrollContent(root.transform, out _);
-            var back = CreateButton("Back", content, "← Back", false);
+            var back = CreateButton("Back", content, "Back", false);
             var progress = CreateLabel("Progress", content, "", 12, false, UiTheme.TextMuted);
             var cardGo = CreateCard("FlashCard", content);
             var cardLe = cardGo.gameObject.AddComponent<LayoutElement>();
@@ -525,7 +525,7 @@ namespace UIP.EditorTools
         {
             var root = CreatePanel(host, "BookmarksPanel", AppScreen.Bookmarks, out var screenGo);
             var content = CreateScrollContent(root.transform, out _);
-            var back = CreateButton("Back", content, "← Back", false);
+            var back = CreateButton("Back", content, "Back", false);
             CreateLabel("Title", content, "Bookmarks", 24, true, UiTheme.Text);
             var empty = CreateLabel("Empty", content, "No bookmarks yet", 14, false, UiTheme.TextMuted);
             var list = CreateStretchColumn("List", content, 10);
@@ -539,7 +539,7 @@ namespace UIP.EditorTools
         {
             var root = CreatePanel(host, "MistakesPanel", AppScreen.CommonMistakes, out var screenGo);
             var content = CreateScrollContent(root.transform, out _);
-            var back = CreateButton("Back", content, "← Back", false);
+            var back = CreateButton("Back", content, "Back", false);
             CreateLabel("Title", content, "Common interview mistakes", 24, true, UiTheme.Text);
             var list = CreateStretchColumn("List", content, 10);
             var screen = screenGo.AddComponent<MistakesScreen>();
@@ -552,7 +552,7 @@ namespace UIP.EditorTools
         {
             var root = CreatePanel(host, "MistakeDetailPanel", AppScreen.MistakeDetail, out var screenGo);
             var content = CreateScrollContent(root.transform, out _);
-            var back = CreateButton("Back", content, "← Back", false);
+            var back = CreateButton("Back", content, "Back", false);
             var title = CreateLabel("Title", content, "", 24, true, UiTheme.Text);
             CreateLabel("WhyTitle", content, "Why it's a problem", 14, true, UiTheme.Accent);
             var why = CreateLabel("Why", content, "", 13, false, UiTheme.TextMuted);
