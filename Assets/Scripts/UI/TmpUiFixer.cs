@@ -22,7 +22,7 @@ namespace UIP.UI
                 return;
             }
 
-            var font = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationSans SDF");
+            var font = TMP_Settings.defaultFontAsset;
             var labels = root.GetComponentsInChildren<TextMeshProUGUI>(true);
             foreach (var tmp in labels)
             {
@@ -39,9 +39,18 @@ namespace UIP.UI
                     tmp.overflowMode = TextOverflowModes.Overflow;
                 }
 
-                if (tmp.font == null && font != null)
+                if (font != null)
                 {
                     tmp.font = font;
+                }
+            }
+
+            var inputs = root.GetComponentsInChildren<TMP_InputField>(true);
+            foreach (var input in inputs)
+            {
+                if (input != null && font != null)
+                {
+                    input.fontAsset = font;
                 }
             }
 

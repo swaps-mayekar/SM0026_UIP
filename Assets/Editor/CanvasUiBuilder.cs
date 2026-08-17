@@ -18,7 +18,7 @@ namespace UIP.EditorTools
     public static class CanvasUiBuilder
     {
         const string PrefabFolder = "Assets/UI/Prefabs";
-        const string FontPath = "Assets/TextMesh Pro/Resources/Fonts & Materials/LiberationSans SDF.asset";
+        const string FontPath = "Assets/UI/Font/IBMPlexSans_Condensed-Bold SDF.asset";
 
         static TMP_FontAsset Font;
 
