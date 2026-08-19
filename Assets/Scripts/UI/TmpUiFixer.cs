@@ -93,64 +93,78 @@ namespace UIP.UI
         /// Turns a wrap-style chip row into a horizontal scroller, or returns the
         /// existing content transform when the row is already scrollable.
         /// </summary>
-        public static Transform EnsureHorizontalChipScroll(Transform row)
+        public static void PrepareChipRowContainer(Transform node)
         {
+            var row = GetChipRowContainer(node);
             if (row == null)
+            {
+                return;
+            }
+
+            PrepareChipRow(row);
+            EnsureParentControlsChildHeight(row);
+            RebuildLayoutChain(row);
+        }
+
+        public static Transform EnsureHorizontalChipScroll(Transform node)
+        {
+            if (node == null)
             {
                 return null;
             }
 
+            var row = GetChipRowContainer(node);
+            PrepareChipRow(row);
+            EnsureParentControlsChildHeight(row);
+
             var selfScroll = row.GetComponent<ScrollRect>();
             if (selfScroll != null)
             {
-                return selfScroll.content != null ? selfScroll.content : row;
+                var target = selfScroll.content != null ? selfScroll.content : row;
+                RebuildLayoutChain(row);
+                return target;
             }
 
             var parentScroll = row.GetComponentInParent<ScrollRect>();
             if (parentScroll != null &&
-                parentScroll.content == row &&
+                parentScroll.content == node &&
                 parentScroll.horizontal &&
                 !parentScroll.vertical)
             {
-                return row;
+                RebuildLayoutChain(row);
+                return node;
             }
 
             var layout = row.GetComponent<HorizontalLayoutGroup>();
-            if (layout == null)
+            if (layout == null || row.GetComponent<ScrollRect>() != null)
             {
-                return row;
+                return node;
             }
 
             var fitter = row.GetComponent<ContentSizeFitter>();
-            if (fitter == null || fitter.horizontalFit != ContentSizeFitter.FitMode.PreferredSize)
+            if (fitter != null)
             {
-                return row;
+                fitter.enabled = false;
+                if (Application.isPlaying)
+                {
+                    UnityEngine.Object.Destroy(fitter);
+                }
+                else
+                {
+                    UnityEngine.Object.DestroyImmediate(fitter);
+                }
             }
 
             var spacing = layout.spacing;
             layout.enabled = false;
-            fitter.enabled = false;
             if (Application.isPlaying)
             {
                 UnityEngine.Object.Destroy(layout);
-                UnityEngine.Object.Destroy(fitter);
             }
             else
             {
                 UnityEngine.Object.DestroyImmediate(layout);
-                UnityEngine.Object.DestroyImmediate(fitter);
             }
-
-            var rowLe = row.GetComponent<LayoutElement>();
-            if (rowLe == null)
-            {
-                rowLe = row.gameObject.AddComponent<LayoutElement>();
-            }
-
-            rowLe.minHeight = 36;
-            rowLe.preferredHeight = 36;
-            rowLe.flexibleWidth = 1;
-            rowLe.minWidth = 0;
 
             var viewport = new GameObject("Viewport", typeof(RectTransform), typeof(Image), typeof(RectMask2D));
             viewport.transform.SetParent(row, false);
@@ -194,7 +208,103 @@ namespace UIP.UI
             scroll.inertia = true;
             scroll.viewport = viewportRt;
             scroll.content = contentRt;
+            RebuildLayoutChain(row);
             return content.transform;
+        }
+
+        public static void RebuildLayoutChain(Transform from)
+        {
+            if (from == null)
+            {
+                return;
+            }
+
+            Canvas.ForceUpdateCanvases();
+            var current = from;
+            while (current != null)
+            {
+                if (current is RectTransform rt)
+                {
+                    LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+                }
+
+                current = current.parent;
+            }
+
+            Canvas.ForceUpdateCanvases();
+        }
+
+        static Transform GetChipRowContainer(Transform node)
+        {
+            if (node == null)
+            {
+                return null;
+            }
+
+            if (node.GetComponent<ScrollRect>() != null)
+            {
+                return node;
+            }
+
+            var parentScroll = node.GetComponentInParent<ScrollRect>();
+            if (parentScroll != null &&
+                parentScroll.horizontal &&
+                !parentScroll.vertical &&
+                (parentScroll.content == node || node.IsChildOf(parentScroll.content)))
+            {
+                return parentScroll.transform;
+            }
+
+            return node;
+        }
+
+        static void EnsureParentControlsChildHeight(Transform row)
+        {
+            var group = row.parent != null ? row.parent.GetComponent<VerticalLayoutGroup>() : null;
+            if (group != null)
+            {
+                group.childControlHeight = true;
+            }
+        }
+
+        static void PrepareChipRow(Transform row)
+        {
+            if (row == null)
+            {
+                return;
+            }
+
+            // Disable immediately: deferred Destroy leaves the fitter reporting 0 height
+            // for the rest of the frame while the parent VLG skips child height control.
+            var fitter = row.GetComponent<ContentSizeFitter>();
+            if (fitter != null)
+            {
+                fitter.enabled = false;
+                if (Application.isPlaying)
+                {
+                    UnityEngine.Object.Destroy(fitter);
+                }
+                else
+                {
+                    UnityEngine.Object.DestroyImmediate(fitter);
+                }
+            }
+
+            var rowLe = row.GetComponent<LayoutElement>();
+            if (rowLe == null)
+            {
+                rowLe = row.gameObject.AddComponent<LayoutElement>();
+            }
+
+            rowLe.minHeight = 36;
+            rowLe.preferredHeight = 36;
+            rowLe.flexibleWidth = 1;
+            rowLe.minWidth = 0;
+
+            if (row is RectTransform rt)
+            {
+                rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 36f);
+            }
         }
 
         /// <summary>
@@ -212,6 +322,7 @@ namespace UIP.UI
                 }
 
                 group.childControlWidth = true;
+                group.childControlHeight = true;
                 group.childForceExpandWidth = true;
                 group.childForceExpandHeight = false;
             }

@@ -144,6 +144,12 @@ namespace UIP.UI
             var revealed = mock.revealShown;
             SetActive(pauseButton, !revealed);
             SetActive(revealButton, !revealed);
+            if (revealed)
+            {
+                TmpUiFixer.PrepareChipRowContainer(ratingRoot);
+                TmpUiFixer.PrepareChipRowContainer(confidenceRoot);
+            }
+
             SetActive(revealedRoot, revealed);
             SetText(pauseLabel, mock.paused ? "Resume timer" : "Pause");
 
@@ -157,6 +163,11 @@ namespace UIP.UI
             SetText(nextLabel, mock.currentIndex >= mock.questionIds.Count - 1 ? "Finish interview" : "Next question");
             BuildRatingChips();
             BuildConfidenceChips();
+            if (revealedRoot != null)
+            {
+                TmpUiFixer.Fix(revealedRoot.transform);
+                TmpUiFixer.RebuildLayoutChain(revealedRoot.transform);
+            }
         }
 
         public void UpdateTimer(float seconds)
@@ -171,7 +182,9 @@ namespace UIP.UI
                 return;
             }
 
-            var values = (SelfRating[])System.Enum.GetValues(typeof(SelfRating));
+            var values = ((SelfRating[])System.Enum.GetValues(typeof(SelfRating)))
+                .Where(r => r != SelfRating.Missed)
+                .ToArray();
             UiListSpawner.Spawn<UiChipView>(ratingRoot, chipPrefab, values.Length, (chip, i) =>
             {
                 var rating = values[i];

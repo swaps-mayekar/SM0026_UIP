@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -119,6 +120,12 @@ namespace UIP.UI
 
             var revealed = Router.AnswerRevealed;
             SetActive(revealButton, !revealed);
+            if (revealed)
+            {
+                TmpUiFixer.PrepareChipRowContainer(ratingRoot);
+                TmpUiFixer.PrepareChipRowContainer(confidenceRoot);
+            }
+
             SetActive(revealedRoot, revealed);
             if (!revealed)
             {
@@ -133,6 +140,11 @@ namespace UIP.UI
             SetActive(codeLabel, !string.IsNullOrWhiteSpace(q.codeSnippet));
             BuildRatingChips();
             BuildConfidenceChips();
+            if (revealedRoot != null)
+            {
+                TmpUiFixer.Fix(revealedRoot.transform);
+                TmpUiFixer.RebuildLayoutChain(revealedRoot.transform);
+            }
         }
 
         void BuildRatingChips()
@@ -142,7 +154,9 @@ namespace UIP.UI
                 return;
             }
 
-            var values = (SelfRating[])System.Enum.GetValues(typeof(SelfRating));
+            var values = ((SelfRating[])System.Enum.GetValues(typeof(SelfRating)))
+                .Where(r => r != SelfRating.Missed)
+                .ToArray();
             UiListSpawner.Spawn<UiChipView>(ratingRoot, chipPrefab, values.Length, (chip, i) =>
             {
                 var rating = values[i];

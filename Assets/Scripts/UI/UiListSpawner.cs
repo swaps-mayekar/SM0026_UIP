@@ -69,6 +69,7 @@ namespace UIP.UI
             }
 
             TmpUiFixer.Fix(parent);
+            TmpUiFixer.RebuildLayoutChain(parent);
             return results;
         }
     }

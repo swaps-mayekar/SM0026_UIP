@@ -629,7 +629,7 @@ namespace UIP.EditorTools
             vlg.spacing = spacing;
             vlg.childAlignment = TextAnchor.UpperLeft;
             vlg.childControlWidth = true;
-            vlg.childControlHeight = false;
+            vlg.childControlHeight = true;
             vlg.childForceExpandWidth = true;
             vlg.childForceExpandHeight = false;
             go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
