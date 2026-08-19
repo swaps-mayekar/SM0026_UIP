@@ -34,6 +34,18 @@ namespace UIP.Tests
             Assert.IsNotEmpty(filtered);
             Assert.IsTrue(filtered.All(q => q.topicId == topicId));
         }
+
+        [Test]
+        public void FilterQuestions_Every_Difficulty_Has_Items()
+        {
+            var repo = ContentRepository.LoadFromResources();
+            foreach (Difficulty difficulty in Enum.GetValues(typeof(Difficulty)))
+            {
+                var filtered = repo.FilterQuestions(difficulty: difficulty).ToList();
+                Assert.IsNotEmpty(filtered, $"Practice filter '{difficulty}' should have questions.");
+                Assert.IsTrue(filtered.All(q => q.difficulty == difficulty));
+            }
+        }
     }
 
     public class SpacedRepetitionTests

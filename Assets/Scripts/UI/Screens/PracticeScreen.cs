@@ -85,7 +85,9 @@ namespace UIP.UI
             }
 
             var values = new Difficulty?[] { null }
-                .Concat(System.Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>().Select(d => (Difficulty?)d))
+                .Concat(System.Enum.GetValues(typeof(Difficulty)).Cast<Difficulty>()
+                    .Where(d => Ctx.Content.FilterQuestions(difficulty: d).Any())
+                    .Select(d => (Difficulty?)d))
                 .ToList();
 
             UiListSpawner.Spawn<UiChipView>(difficultyRoot, chipPrefab, values.Count, (chip, i) =>

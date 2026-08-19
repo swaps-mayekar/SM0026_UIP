@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "contentVersion": "1.0.0",
+  "contentVersion": "1.1.0",
   "topics": [
     {
       "id": "basics",
@@ -2390,6 +2390,512 @@
       "tags": [
         "weighted random",
         "personalization"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_basics_06",
+      "topicId": "basics",
+      "prompt": "You are the technical lead for a live Unity title with boot, hub, and many additive gameplay scenes. How do you design scene ownership so multiple teams can ship without breaking load order?",
+      "interviewerIntent": "Lead-level architecture: ownership, additive loading, and team-scale scene policy.",
+      "idealAnswer": "Define a single bootstrap scene that owns persistent services (audio, analytics, save, Addressables) and never duplicates them. Publish a load contract: which scenes are additive, which systems must exist before gameplay, and who may DontDestroyOnLoad. Use a scene catalog (ScriptableObject/Addressables labels) instead of hardcoded SceneManager strings. Gate gameplay until dependencies report ready. Review PRs that add new root scenes against an architecture diagram so UI, lighting, and EventSystems cannot fork the boot path.",
+      "commonMistakes": [
+        "Letting every feature scene spawn its own managers",
+        "No documented additive vs single-load policy"
+      ],
+      "followUps": [
+        "How do you test boot order in CI without a device?",
+        "What happens if a DLC scene arrives before the hub catalog is updated?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "architecture",
+        "scenes",
+        "ownership"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_gameobject_06",
+      "topicId": "gameobject",
+      "prompt": "Prefab Variants are proliferating across three gameplay teams and nested overrides are breaking production. As lead, what governance would you put in place?",
+      "interviewerIntent": "Studio-scale composition and Prefab workflow.",
+      "idealAnswer": "Establish a prefab ownership model: core shells (player, enemies, interactables) have a single owning team; feature teams extend via variants or composition, not by editing the base. Limit nesting depth, ban 'fix in override' for shared components, and require unpack-and-rebuild when a variant diverges too far. Add Editor validators for missing scripts, scale, and required components. Prefer nested prefabs for stable parts and data-driven config (ScriptableObjects) for tunables so designers do not fork GameObject graphs.",
+      "commonMistakes": [
+        "Treating variants as a substitute for a data-driven design",
+        "No owner for the base prefab"
+      ],
+      "followUps": [
+        "When would you split a prefab into runtime-spawned parts instead?",
+        "How do you detect override rot in CI?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "prefabs",
+        "governance",
+        "composition"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_lifecycle_06",
+      "topicId": "lifecycle",
+      "prompt": "A mid-size studio has race conditions between Awake, async Addressables, and third-party SDKs. How would you redesign initialization as a technical lead?",
+      "interviewerIntent": "Deterministic boot architecture beyond MonoBehaviour order.",
+      "idealAnswer": "Stop relying on script execution order as the product contract. Introduce an explicit boot pipeline: register services, load configs, initialize SDKs, then spawn gameplay. Use a finite state machine or sequenced tasks with timeouts and failure UI. Gameplay MonoBehaviours subscribe to 'session ready' rather than assuming Start is safe. Document what may run in Awake vs after content load. Isolate third-party SDK init on a worker/main-thread policy you control so a slow consent prompt cannot stall the first gameplay frame indefinitely.",
+      "commonMistakes": [
+        "Fixing races with more Default Execution Order numbers",
+        "Initializing network/analytics inside random gameplay Awakes"
+      ],
+      "followUps": [
+        "How do you make this testable without Play Mode for every step?",
+        "What is your policy for DontDestroyOnLoad objects during domain reload in the Editor?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "boot",
+        "lifecycle",
+        "services"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_physics_06",
+      "topicId": "physics",
+      "prompt": "Design would like 'fully physical' vehicles, cloth, and destructibles on mobile and console. How do you decide what physics the engine actually owns?",
+      "interviewerIntent": "Lead judgment on physics scope, determinism, and cost.",
+      "idealAnswer": "Treat physics as a budgeted system, not a default for every interaction. Split: authoritative gameplay collision (simple colliders, discrete/CCD where needed), presentation (VFX, cloth, debris) that can be approximated or client-only, and simulation that must be deterministic if networked. Set solver, layer, and query budgets per platform. Prefer kinematic/animated motion or simplified capsules for characters unless vehicles are the product. Write a physics tech brief covering timestep, layers, interpolation, and what designers may not request without a spike.",
+      "commonMistakes": [
+        "Enabling PhysX for cosmetics that could be shaders or particles",
+        "Promising deterministic physics without a lockstep or server-sim plan"
+      ],
+      "followUps": [
+        "How would you staff a physics spike vs buying middleware?",
+        "What metrics go on a physics performance dashboard?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "physics",
+        "budgets",
+        "scope"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_ui_06",
+      "topicId": "ui",
+      "prompt": "You must choose a UI stack for a five-year live game that ships on iOS, Android, and console. How do you decide between uGUI, UI Toolkit, and a hybrid, and how do you keep teams aligned?",
+      "interviewerIntent": "Multi-year UI platform strategy.",
+      "idealAnswer": "Pick for team skill, platform input, localization, and runtime cost\u2014not novelty. uGUI is proven for gameplay HUDs and world-space; UI Toolkit is stronger for tools and data-heavy menus if the team can own USS and custom controls. A hybrid is acceptable if you draw a hard boundary (Toolkit for meta, uGUI for in-world) and share tokens, localization, and input via one UI service. Ban dual implementations of the same screen. Budget canvas rebuilds and font atlases. Plan accessibility, safe areas, and scaler policy as platform requirements, not polish.",
+      "commonMistakes": [
+        "Rewriting UI mid-live-ops because a new Unity version shipped Toolkit samples",
+        "Letting each feature team pick its own canvas strategy"
+      ],
+      "followUps": [
+        "How do you version a design system in Unity?",
+        "What is your rollback plan if Toolkit has a ship-blocking bug on a console SDK?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "UI strategy",
+        "live ops",
+        "hybrid"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_animation_05",
+      "topicId": "animation",
+      "prompt": "Combat wants motion matching, cinematic wants Timeline, and live ops wants cheap animator swaps. How do you set an animation technology strategy?",
+      "interviewerIntent": "Tech investment and pipeline ownership for animation.",
+      "idealAnswer": "Map each use case to a layer: locomotion (Animator, Playables, or motion matching if you can staff the pipeline), authored cinematics (Timeline with shared bindings), and cosmetic overlays (additive layers / simple swaps). Do not let three systems own the same character root. Define a humanoid/rig contract, retarget policy, and who owns clip compression. Motion matching is a production bet\u2014require a vertical slice on target FPS and memory before studio-wide adoption. Document how networking, root motion, and hit reactions share one animation graph.",
+      "commonMistakes": [
+        "Adopting motion matching because a GDC talk looked good without pipeline staff",
+        "Multiple teams writing to Animator parameters without a contract"
+      ],
+      "followUps": [
+        "How do you measure animation CPU vs visual quality?",
+        "When is a custom PlayableGraph worth forking Animator Controllers?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "animation",
+        "pipeline",
+        "tech strategy"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_navigation_05",
+      "topicId": "navigation",
+      "prompt": "An open-world mobile title needs AI crowds, player pathing, and designer-authored shortcuts. NavMesh baking is already a bottleneck. What is your lead plan?",
+      "interviewerIntent": "Navigation architecture at world scale.",
+      "idealAnswer": "Treat NavMesh as streamed data, not a single baked blob. Partition the world, bake locally, and version tiles with the content catalog. Separate player assistance (cheap, forgiving) from AI (budgeted agent counts, avoidance quality by distance). Use local avoidance / flow fields for crowds instead of a NavMeshAgent per NPC. Give designers off-mesh links and cost areas through data, not unique meshes per shortcut. Profile bake time in CI and fail the build if a tile regresses. Have a fallback (simple steering) when a tile is missing so live patches cannot brick AI.",
+      "commonMistakes": [
+        "One global bake for the whole world",
+        "A NavMeshAgent on every ambient NPC"
+      ],
+      "followUps": [
+        "How do you handle verticality and moving platforms?",
+        "What is your policy for runtime NavMesh carving cost?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "NavMesh",
+        "streaming",
+        "AI"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_audio_05",
+      "topicId": "audio",
+      "prompt": "Audio, localization, and live events all fight over mixer snapshots and voice limits. How would you structure the audio stack so a lead can say no with data?",
+      "interviewerIntent": "Audio architecture, budgets, and cross-discipline process.",
+      "idealAnswer": "Publish an audio budget (voices, DSP, memory, streaming) per platform tier. Own a mixer hierarchy with named snapshots and a single service that plays sounds by ID, not scattered AudioSource.Play calls. Ducking and duck priorities are data. Localization is a bank/variant problem, not duplicated scenes. Live events get a quota and a kill switch. Measure mixer CPU and voice stealing in soak tests. Middleware (Wwise/FMOD) is a staffing and license decision\u2014do not mix native Unity audio and middleware on the same character without a written boundary.",
+      "commonMistakes": [
+        "Designers placing AudioSources on every prefab with unique mixer groups",
+        "No voice stealing policy until ship"
+      ],
+      "followUps": [
+        "How do you test mute/compliance and focus loss on iOS?",
+        "When is spatial audio worth the CPU on mid-tier phones?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "audio",
+        "mixer",
+        "live ops"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_scriptable_06",
+      "topicId": "scriptable",
+      "prompt": "ScriptableObjects became the studio database, but merge conflicts and runtime mutation are constant. What lead-level rules would you set?",
+      "interviewerIntent": "Data architecture and content pipeline discipline.",
+      "idealAnswer": "Split definition assets (immutable at runtime, owned by content) from runtime instances (cloned or separate state). Ban mutating shared ScriptableObjects in play mode except for explicit debug tools. Prefer small, typed assets over god-config objects. Add custom editors, validation, and import-time checks. For high-churn tunables, consider a sidecar format (CSV/JSON imported to SO) with locking or a content tool to reduce YAML merge pain. Document which assets are addressable vs in Resources. Treat ScriptableObjects as a schema: version them when fields change.",
+      "commonMistakes": [
+        "Runtime code writing into shared assets that persist in the Editor",
+        "One 10,000-line ScriptableObject for the whole game"
+      ],
+      "followUps": [
+        "How do you migrate a field rename across hundreds of assets?",
+        "When would you replace SOs with a real database or Addressable JSON?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "ScriptableObjects",
+        "pipeline",
+        "schema"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_addressables_05",
+      "topicId": "addressables",
+      "prompt": "You own live content updates for iOS. How do you design Addressables catalogs, groups, and rollback so a bad remote pack cannot brick the client?",
+      "interviewerIntent": "Lead-level live-ops content delivery.",
+      "idealAnswer": "Pin a content catalog version to a binary compatibility range. Critical boot assets stay local; remote groups are optional and cached. Build a canary catalog, percentage rollout, and a kill switch that falls back to the last-known-good catalog. Hash/CRC assets, never assume the CDN is the source of truth without verification. Handle version skew: old binaries must ignore unknown keys; new binaries must not require assets the old catalog cannot name. Test catalog updates on first install, update-from-previous, and airplane mode. Document who can cut a content release independently of App Store binaries.",
+      "commonMistakes": [
+        "Shipping a catalog that requires a binary the store has not approved yet",
+        "No rollback besides 'upload yesterday's files and hope'"
+      ],
+      "followUps": [
+        "How do you handle Apple's review if remote content changes gameplay?",
+        "What telemetry proves a catalog is healthy before 100% rollout?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "Addressables",
+        "live ops",
+        "rollback"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_bundles_05",
+      "topicId": "bundles",
+      "prompt": "A legacy title still uses Asset Bundles while new features want Addressables. As lead, how do you migrate without a multi-month freeze?",
+      "interviewerIntent": "Incremental packaging migration.",
+      "idealAnswer": "Do not dual-load the same asset from both systems. Introduce an abstraction (content locator) that can resolve Bundle or Addressable keys. Migrate by dependency island: shaders/materials first, then a vertical slice of a feature, then remaining groups. Keep one dependency graph visible. Freeze bundle naming conventions during the overlap. Measure duplicate memory. Set a kill date for the old loader after the last live pack that needs it. Train the team on packing labels so artists do not silently reintroduce bundle-only assets.",
+      "commonMistakes": [
+        "Big-bang rewrite of every pack in one release",
+        "Loading the same texture from a bundle and Addressables"
+      ],
+      "followUps": [
+        "How do you prove no duplicate assets in a mixed build?",
+        "What is your support window for old binary + new packs?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "Asset Bundles",
+        "migration",
+        "Addressables"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_rendering_06",
+      "topicId": "rendering",
+      "prompt": "Frame time is owned by nobody: lighting, VFX, UI, and characters all 'need' their share. How do you run a rendering architecture review as a technical lead?",
+      "interviewerIntent": "Budget ownership and cross-team rendering process.",
+      "idealAnswer": "Publish a frame budget spreadsheet per platform (CPU main, render thread, GPU) and assign owners. Require a Frame Debugger / Profiler capture for any feature that adds a pass, unique material, or full-screen blit. Standardize SRP Batcher-friendly shaders, light counts, and overdraw rules. Quality tiers are a product contract, not a hidden Graphics settings dump. Hold a recurring render review with art and engineering. Kill or gate features that blow the budget on the min spec. Document camera stacking, post-process, and UI canvas costs so they are not 'free'.",
+      "commonMistakes": [
+        "Optimizing only the hero scene on a high-end Mac Editor",
+        "No named owner for GPU overdraw"
+      ],
+      "followUps": [
+        "How do you enforce shader variant explosion limits?",
+        "What is your process when marketing wants a cinematic trailer look in-game?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "rendering",
+        "budgets",
+        "process"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_srp_05",
+      "topicId": "srp",
+      "prompt": "The studio is debating URP vs HDRP vs a custom SRP for the next flagship. How do you make and defend the decision for the next five years?",
+      "interviewerIntent": "Pipeline choice as a business and staffing decision.",
+      "idealAnswer": "Start from devices, team size, and content pipeline\u2014not feature checklists. URP is the default for multi-platform including mobile; HDRP if the product is high-end PC/console only and you can staff lighting and shader work. A custom SRP is rarely justified unless you have a graphics team that will own upgrades across Unity versions. Cost the migration, asset re-authoring, and third-party package compatibility. Prototype the hardest visual pillar on target hardware. Write a decision record covering lighting, VFX, UI, XR, and vendor plugins so the choice survives staff turnover.",
+      "commonMistakes": [
+        "Choosing HDRP for a mobile-first live game",
+        "Forking URP without a graphics owner to merge upstream"
+      ],
+      "followUps": [
+        "How do you handle a Unity version jump that deprecates your Renderer Features?",
+        "When is Built-in still the honest answer for a live legacy title?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "URP",
+        "HDRP",
+        "tech strategy"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_dots_05",
+      "topicId": "dots",
+      "prompt": "Leadership heard DOTS will 'make the game faster'. How do you decide where ECS belongs and how you would staff the adoption?",
+      "interviewerIntent": "Adoption strategy, hybrid boundaries, and hiring.",
+      "idealAnswer": "DOTS is for high-count simulation (projectiles, crowds, spatial queries), not a rewrite of UI or narrative. Require a vertical slice with Burst/Jobs metrics vs the MonoBehaviour baseline. Define hybrid rules: which world is authoritative, how baking works, and what APIs are banned inside jobs. Budget training and tooling (debug, conversion, content authoring). Hire or grow one owner; do not sprinkle ECS into every feature team. Keep an escape hatch to GameObjects for sparse, authored content. Communicate to producers that DOTS is a multi-release investment, not a toggle.",
+      "commonMistakes": [
+        "Announcing a full ECS rewrite to hit a performance KR",
+        "Every gameplay programmer writing Entities without a shared architecture"
+      ],
+      "followUps": [
+        "How do you measure ROI after two milestones?",
+        "What do you do if Unity's Entities package cadence risks your ship date?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "DOTS",
+        "adoption",
+        "hybrid"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_multiplayer_05",
+      "topicId": "multiplayer",
+      "prompt": "Pick a netcode stack and topology for a competitive-lite mobile game with seasonal content. Defend cost, cheat, and live-ops implications.",
+      "interviewerIntent": "Networking as product architecture, not an API choice.",
+      "idealAnswer": "State the trust model first: server-authoritative for inventory, currency, match outcomes; client prediction only for movement feel. Topology: dedicated or platform relay if fairness matters; player-host only if the genre is casual and you can afford host migration. Stack choice (Netcode for GameObjects, custom UDP, third party) follows tick rate, interest management, and team experience. Live ops needs versioned protocols and content catalogs that cannot grant items without server checks. Cost the relay/server bill at peak concurrent. Plan offline/practice modes so QA is not blocked on cloud.",
+      "commonMistakes": [
+        "Client-authoritative combat because it was faster to prototype",
+        "Ignoring host migration and NAT until soft launch"
+      ],
+      "followUps": [
+        "How do you test desync without a full production cluster?",
+        "What is your cheat-review checklist before a competitive season?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "netcode",
+        "authority",
+        "live ops"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_mobile_06",
+      "topicId": "mobile",
+      "prompt": "You must certify three device tiers and a thermal budget for a year of live events. What operating model do you put in place?",
+      "interviewerIntent": "Sustained mobile performance as a process, not a one-time optimize pass.",
+      "idealAnswer": "Name min/mid/high devices and keep them in the office and CI farm. Publish FPS, memory, temperature, and battery budgets per tier. Dynamic quality scaling is a shipped system with telemetry, not a hidden Graphics slider. Every live event has a performance acceptance test on min spec for 20+ minutes. Address memory warnings, shader variants, and download size as release gates. Coordinate with art on texture/mesh LODs as a pipeline, not hero-scene exceptions. Plan for OS-level thermal throttling and backgrounding. Review App Store binary size and on-demand content separately.",
+      "commonMistakes": [
+        "Certifying only on the producer\u2019s latest phone",
+        "Treating thermals as QA\u2019s problem in week 12"
+      ],
+      "followUps": [
+        "How do you gate a live event that fails min-spec soak?",
+        "What telemetry distinguishes a content bug from a device-specific driver issue?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "mobile",
+        "thermals",
+        "process"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_build_05",
+      "topicId": "build",
+      "prompt": "Describe a Unity CI/CD and branching strategy that lets a live iOS title ship hotfixes without blocking trunk content.",
+      "interviewerIntent": "Release engineering at lead level.",
+      "idealAnswer": "Trunk or main stays releasable; feature branches are short. Release branches cut from a known green build for store submissions. Addressables/content can ship on a separate cadence if binary-compatible. CI: IL2CPP player builds, tests, and an artifact store keyed by git SHA and content version. Fastlane/Xcode signing is owned, not tribal knowledge. Hotfix process: branch from the shipped tag, minimal diff, bump build number, and cherry-pick forward. Never rely on local Editor builds for store. Document Player Settings, scripting defines, and stripping as code so they cannot drift between machines.",
+      "commonMistakes": [
+        "Only one person can press Build and Run for iOS",
+        "Hotfixing directly on main while a content freeze is in progress with no tag"
+      ],
+      "followUps": [
+        "How do you keep Addressables catalogs aligned with a hotfix binary?",
+        "What is your policy for Unity minor version upgrades on a live branch?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "CI",
+        "iOS",
+        "release"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_csharp_06",
+      "topicId": "csharp",
+      "prompt": "Set C# and IL2CPP standards for a 30-person Unity team. What is in the coding bar, and what do you refuse?",
+      "interviewerIntent": "Language/runtime policy that survives code review.",
+      "idealAnswer": "Define allocation rules (no GC in hot loops, object pools where measured), async policy (UniTask vs coroutines vs jobs), and banned APIs (LINQ in Update, foreach on Dictionary in hot paths if boxed, reflection in gameplay). Require Burst-friendly data in simulation code. IL2CPP: understand stripping, AOT constraints, and no runtime codegen. Editor-only code lives behind defines and asmdefs. Code review checks for thread safety around native containers. Document exception policy\u2014gameplay should fail loud in Editor, degrade in player. The bar is measured with Profiler, not taste.",
+      "commonMistakes": [
+        "A 40-page style guide with no Profiler gates",
+        "Allowing 'just this once' allocations in the combat Update"
+      ],
+      "followUps": [
+        "How do you teach juniors this without blocking every PR?",
+        "When do you allow LINQ in tools vs runtime?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "C#",
+        "IL2CPP",
+        "standards"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_oop_05",
+      "topicId": "oop",
+      "prompt": "Feature teams keep inheriting from a 4,000-line PlayerController. How do you redesign ownership so OOP helps instead of coupling the studio?",
+      "interviewerIntent": "Modularity and composition at team scale.",
+      "idealAnswer": "Replace deep inheritance with composition: movement, combat, inventory as modules behind interfaces or message/events, with a thin fa\u00e7ade. Inheritance is for true is-a variation with a stable contract, not for 'shared convenience fields'. Draw bounded contexts so networking, animation, and UI do not reach into private player state. Provide extension points (ScriptableObject abilities, components) instead of virtual soup. Migrate incrementally: extract one subsystem, add tests, delete the base-class shortcut. Architecture reviews reject new subclasses of the god object.",
+      "commonMistakes": [
+        "A rewrite that freezes features for two quarters",
+        "Replacing the god class with a god EventBus"
+      ],
+      "followUps": [
+        "How do you keep serialized references intact during extraction?",
+        "Where is inheritance still the right tool in Unity?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "OOP",
+        "composition",
+        "modularity"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_patterns_07",
+      "topicId": "patterns",
+      "prompt": "The codebase has singletons, a service locator, Zenject, and three event buses. How do you pick an architecture pattern set and decommission the rest?",
+      "interviewerIntent": "Pattern governance vs cargo-cult architecture.",
+      "idealAnswer": "Choose one composition root (explicit installer or a small service registry) and one event strategy (typed messages with clear owners). Singletons are allowed only for true process-wide services with a defined lifetime, preferably behind interfaces for tests. New features must not add a fourth DI flavor. Write a decision record, a migration order (highest coupling first), and CI analyzers if possible. Patterns exist to reduce coordination cost\u2014if a pattern requires a wiki to use, it is not earning its keep. Prefer boring, discoverable Unity components over framework cleverness.",
+      "commonMistakes": [
+        "Adding another DI container to 'fix' the last one",
+        "Banning all singletons overnight without a replacement"
+      ],
+      "followUps": [
+        "How do you test gameplay that currently calls GameManager.Instance?",
+        "When is a service locator acceptable in a Unity client?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "architecture",
+        "DI",
+        "governance"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_algorithms_06",
+      "topicId": "algorithms",
+      "prompt": "Designers want 'smart' targeting, loot, and matchmaking heuristics that all run on the main thread. How do you set algorithmic complexity budgets as lead?",
+      "interviewerIntent": "Algorithm choice as a product constraint.",
+      "idealAnswer": "Give each system a CPU budget and a Big-O expectation at peak entity counts. Targeting might be spatial hashing or a budgeted query, not O(n^2) every frame. Loot can be precomputed or server-side. Matchmaking is not a client algorithm. Move heavy work to jobs, ticks, or the server. Require a worst-case input in tests (max players, max loot tables). Document approximation: good-enough AI at 5ms beats perfect AI at 20ms on mobile. Complexity reviews happen before implementation, not after a hitch ships.",
+      "commonMistakes": [
+        "Shipping nested scans because the prototype felt fine with 10 enemies",
+        "Putting matchmaking fairness logic only on the client"
+      ],
+      "followUps": [
+        "How do you teach designers why a cheaper heuristic is required?",
+        "What profiling evidence do you require to accept an O(n log n) change in combat?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "algorithms",
+        "budgets",
+        "jobs"
+      ],
+      "codeSnippet": ""
+    },
+    {
+      "id": "q_datastruct_06",
+      "topicId": "datastruct",
+      "prompt": "Set a studio policy for collections, NativeContainers, and object pooling. What belongs in gameplay hot paths vs tools?",
+      "interviewerIntent": "Memory and data-layout standards.",
+      "idealAnswer": "Hot paths: arrays, lists with capacity, structs, NativeArrays in jobs, no Dictionary per-frame allocate, no boxing. Tools and boot: dictionaries, LINQ, convenience are fine. Pooling is for measured churn (projectiles, damage numbers), not a religion. Document cache locality for ECS/DOTS vs managed gameplay. Ban hidden allocations in getters used from Update. Provide shared pool utilities and leak tests. Memory Profiler captures are a release gate for live events. Explain to the team why List<T> vs [] vs NativeList is a performance decision, not style.",
+      "commonMistakes": [
+        "Pooling everything including one-shot UI screens",
+        "Using Dictionary<string, Action> in the combat tick"
+      ],
+      "followUps": [
+        "How do you detect a pool leak in CI?",
+        "When do you migrate a managed simulation to NativeContainers without full DOTS?"
+      ],
+      "difficulty": 5,
+      "estimatedSeconds": 180,
+      "tags": [
+        "data structures",
+        "memory",
+        "pooling"
       ],
       "codeSnippet": ""
     }
