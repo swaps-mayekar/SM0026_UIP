@@ -12,7 +12,7 @@ PlayerSettings:
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: Gold Box
+  companyName: Bobby Nangle
   productName: Unity Interview Prep
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -169,7 +169,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.goldbox.uip
     Standalone: com.goldbox.uip
-    iPhone: com.goldbox.uip
+    iPhone: com.bobbynangle.uip
   buildNumber:
     Standalone: 0
     VisionOS: 0
@@ -827,11 +827,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: 9e7b285b-f8c7-4683-95c0-eecfd9ce60e3
+  cloudProjectId: 
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: UIP
-  organizationId: awsmacinstance
+  projectName: 
+  organizationId: 
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}
