@@ -632,10 +632,8 @@ namespace UIP.EditorTools
             vlg.childControlHeight = true;
             vlg.childForceExpandWidth = true;
             vlg.childForceExpandHeight = false;
-            go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            var le = go.AddComponent<LayoutElement>();
-            le.flexibleWidth = 1;
-            le.minWidth = 0;
+            // No ContentSizeFitter / LayoutElement: parent scroll Content already fits
+            // preferred height from this VLG. Nested fitters prevent page scrolling.
             return go;
         }
 
@@ -871,9 +869,6 @@ namespace UIP.EditorTools
             vlg.childForceExpandHeight = false;
             vlg.childForceExpandWidth = true;
             go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            var rowLe = go.AddComponent<LayoutElement>();
-            rowLe.flexibleWidth = 1;
-            rowLe.minWidth = 0;
             var title = CreateLabel("Title", go.transform, "Title", 16, true, UiTheme.Text);
             var subtitle = CreateLabel("Subtitle", go.transform, "Subtitle", 12, false, UiTheme.TextMuted);
             var body = CreateLabel("Body", go.transform, "Body", 13, false, UiTheme.TextMuted);
@@ -899,9 +894,6 @@ namespace UIP.EditorTools
             vlg.childForceExpandHeight = false;
             vlg.childForceExpandWidth = true;
             go.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            var rowLe = go.AddComponent<LayoutElement>();
-            rowLe.flexibleWidth = 1;
-            rowLe.minWidth = 0;
             var title = CreateLabel("Title", go.transform, "Lesson", 16, true, UiTheme.Text);
             var badge = CreateLabel("Badge", go.transform, "5 min", 11, false, UiTheme.Accent);
             var summary = CreateLabel("Summary", go.transform, "", 13, false, UiTheme.TextMuted);

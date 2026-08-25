@@ -77,6 +77,7 @@ namespace UIP.UI
             }
 
             StretchVerticalColumns(root);
+            FixStretchListColumns(root);
             PadScrollPanels(root);
             EnsureScrollRaycasts(root);
 
@@ -101,6 +102,15 @@ namespace UIP.UI
                 return;
             }
 
+            // Only chip rows — never lock vertical list heights to 36px.
+            var scroll = row.GetComponent<ScrollRect>();
+            var isChipScroll = scroll != null && scroll.horizontal && !scroll.vertical;
+            var isChipLayout = row.GetComponent<HorizontalLayoutGroup>() != null;
+            if (!isChipScroll && !isChipLayout)
+            {
+                return;
+            }
+
             PrepareChipRow(row);
             EnsureParentControlsChildHeight(row);
             RebuildLayoutChain(row);
@@ -114,32 +124,41 @@ namespace UIP.UI
             }
 
             var row = GetChipRowContainer(node);
-            PrepareChipRow(row);
-            EnsureParentControlsChildHeight(row);
 
+            // Already a horizontal chip scroller — prepare and return its content.
             var selfScroll = row.GetComponent<ScrollRect>();
-            if (selfScroll != null)
+            if (selfScroll != null && selfScroll.horizontal && !selfScroll.vertical)
             {
+                PrepareChipRow(row);
+                EnsureParentControlsChildHeight(row);
                 var target = selfScroll.content != null ? selfScroll.content : row;
                 RebuildLayoutChain(row);
                 return target;
             }
 
+            // Spawning into an existing horizontal chip content transform.
             var parentScroll = row.GetComponentInParent<ScrollRect>();
             if (parentScroll != null &&
-                parentScroll.content == node &&
                 parentScroll.horizontal &&
-                !parentScroll.vertical)
+                !parentScroll.vertical &&
+                (parentScroll.content == node || node.IsChildOf(parentScroll.content)))
             {
-                RebuildLayoutChain(row);
+                PrepareChipRow(parentScroll.transform);
+                EnsureParentControlsChildHeight(parentScroll.transform);
+                RebuildLayoutChain(parentScroll.transform);
                 return node;
             }
 
+            // Only convert true chip rows (HorizontalLayoutGroup). Vertical lists must
+            // never run PrepareChipRow — it locks height to 36px and kills page scroll.
             var layout = row.GetComponent<HorizontalLayoutGroup>();
             if (layout == null || row.GetComponent<ScrollRect>() != null)
             {
                 return node;
             }
+
+            PrepareChipRow(row);
+            EnsureParentControlsChildHeight(row);
 
             var fitter = row.GetComponent<ContentSizeFitter>();
             if (fitter != null)
@@ -310,6 +329,7 @@ namespace UIP.UI
         /// <summary>
         /// Nested VerticalLayoutGroups default to childControlWidth=false, so children
         /// keep Unity's 100px RectTransform and render as a skinny left column.
+        /// Only width is forced here — stretch lists handle height in FixStretchListColumns.
         /// </summary>
         static void StretchVerticalColumns(Transform root)
         {
@@ -322,10 +342,79 @@ namespace UIP.UI
                 }
 
                 group.childControlWidth = true;
-                group.childControlHeight = true;
                 group.childForceExpandWidth = true;
                 group.childForceExpandHeight = false;
             }
+        }
+
+        static readonly string[] StretchListNames =
+        {
+            "List", "WeakList", "ActivityList", "Revealed"
+        };
+
+        /// <summary>
+        /// List/Revealed columns sit under the page ScrollRect content. They must report
+        /// height through VerticalLayoutGroup only. A nested ContentSizeFitter or a
+        /// flexible-only LayoutElement breaks preferred-height aggregation so the page
+        /// cannot scroll (or collapses rows on top of each other).
+        /// </summary>
+        static void FixStretchListColumns(Transform root)
+        {
+            var groups = root.GetComponentsInChildren<VerticalLayoutGroup>(true);
+            foreach (var group in groups)
+            {
+                if (group == null || !IsStretchListName(group.gameObject.name))
+                {
+                    continue;
+                }
+
+                group.childControlWidth = true;
+                group.childControlHeight = true;
+                group.childForceExpandWidth = true;
+                group.childForceExpandHeight = false;
+
+                // Stretch lists must never lock height (chip prep used to force 36px here).
+                var layoutElement = group.GetComponent<LayoutElement>();
+                if (layoutElement != null)
+                {
+                    layoutElement.enabled = false;
+                    if (Application.isPlaying)
+                    {
+                        UnityEngine.Object.Destroy(layoutElement);
+                    }
+                    else
+                    {
+                        UnityEngine.Object.DestroyImmediate(layoutElement);
+                    }
+                }
+
+                var fitter = group.GetComponent<ContentSizeFitter>();
+                if (fitter != null)
+                {
+                    fitter.enabled = false;
+                    if (Application.isPlaying)
+                    {
+                        UnityEngine.Object.Destroy(fitter);
+                    }
+                    else
+                    {
+                        UnityEngine.Object.DestroyImmediate(fitter);
+                    }
+                }
+            }
+        }
+
+        static bool IsStretchListName(string name)
+        {
+            for (var i = 0; i < StretchListNames.Length; i++)
+            {
+                if (name == StretchListNames[i])
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>

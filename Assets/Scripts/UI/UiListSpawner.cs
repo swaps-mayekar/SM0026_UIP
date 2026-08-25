@@ -39,25 +39,41 @@ namespace UIP.UI
 
             parent = TmpUiFixer.EnsureHorizontalChipScroll(parent);
             Clear(parent);
-            var stretchWidth = parent.GetComponent<HorizontalLayoutGroup>() == null;
+            var horizontal = parent.GetComponent<HorizontalLayoutGroup>() != null
+                             || IsHorizontalChipContent(parent);
             for (var i = 0; i < count; i++)
             {
                 var instance = UnityEngine.Object.Instantiate(prefab, parent);
                 instance.SetActive(true);
-                var layoutElement = instance.GetComponent<LayoutElement>();
-                if (layoutElement == null)
+                // Only chip rows need LayoutElement width hints; vertical list rows size via
+                // ContentSizeFitter and a LayoutElement there collapses preferred height.
+                if (horizontal)
                 {
-                    layoutElement = instance.AddComponent<LayoutElement>();
-                }
+                    var layoutElement = instance.GetComponent<LayoutElement>();
+                    if (layoutElement == null)
+                    {
+                        layoutElement = instance.AddComponent<LayoutElement>();
+                    }
 
-                if (stretchWidth)
-                {
-                    layoutElement.flexibleWidth = 1;
-                    layoutElement.minWidth = 0;
+                    layoutElement.flexibleWidth = 0;
                 }
                 else
                 {
-                    layoutElement.flexibleWidth = 0;
+                    var layoutElement = instance.GetComponent<LayoutElement>();
+                    if (layoutElement != null &&
+                        layoutElement.minHeight < 0f &&
+                        layoutElement.preferredHeight < 0f)
+                    {
+                        layoutElement.enabled = false;
+                        if (Application.isPlaying)
+                        {
+                            UnityEngine.Object.Destroy(layoutElement);
+                        }
+                        else
+                        {
+                            UnityEngine.Object.DestroyImmediate(layoutElement);
+                        }
+                    }
                 }
 
                 var component = instance.GetComponent<T>() ?? instance.GetComponentInChildren<T>(true);
@@ -71,6 +87,17 @@ namespace UIP.UI
             TmpUiFixer.Fix(parent);
             TmpUiFixer.RebuildLayoutChain(parent);
             return results;
+        }
+
+        static bool IsHorizontalChipContent(Transform parent)
+        {
+            if (parent == null)
+            {
+                return false;
+            }
+
+            var scroll = parent.GetComponentInParent<ScrollRect>();
+            return scroll != null && scroll.horizontal && !scroll.vertical;
         }
     }
 }
