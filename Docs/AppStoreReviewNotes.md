@@ -1,8 +1,8 @@
-# App Store Review Notes — Unity Interview Prep
+# App Store Review Notes — GameDev Interview Prep
 
-**Bundle ID:** `com.goldbox.uip`  
-**Developer:** Gold Box  
-**Build focus:** Offline-first interview preparation for Unity developers
+**Bundle ID:** `com.bobbynangle.uip`  
+**Developer:** Bobby Nangle  
+**Build focus:** Offline-first interview preparation for Unity / game developers
 
 ## What makes this app different (Guideline 4.2 / 4.3)
 
@@ -44,24 +44,23 @@ All interview prompts, explanations, flashcards, lessons, and code sketches are 
 
 Facts about public APIs are explained in original wording with original examples.
 
-## Trademark / naming notice (material risk)
+## Trademark notice
 
-Product name currently: **Unity Interview Prep**
+Product name: **GameDev Interview Prep**
 
 In-app disclaimer (launch splash):
 
 > Unity is a trademark of Unity Technologies. This application is an independent educational resource and is not affiliated with, endorsed by, or sponsored by Unity Technologies.
 
-**Unresolved risk:** Apple App Review Guideline **5.2(c)** and Unity trademark guidelines may still object to using “Unity” in the **app name** without permission, even with a disclaimer. If App Review requests a rename, proposed alternatives include distinctive independent names with descriptive subtitle copy only.
-
 No Unity logos, editor screenshots, package icons, or Unity Learn artwork are used. Branding assets are original.
 
 ## Suggested App Store metadata (draft)
 
-- **Name:** Unity Interview Prep *(subject to trademark/review outcome)*
-- **Subtitle:** 700+ Questions & Practice *(MVP ships ~100 curated questions with schema for expansion)*
+- **Name:** GameDev Interview Prep
+- **Subtitle:** Unity Interview Q&A Practice
 - **Category:** Education
 - **Keywords:** interview, game developer, csharp, coding practice, flashcards *(avoid packing unrelated trademark spam)*
+- **Bundle ID:** `com.bobbynangle.uip`
 
 ## Contact for review
 

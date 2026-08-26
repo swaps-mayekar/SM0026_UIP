@@ -16,7 +16,8 @@ namespace UIP.EditorTools
                 var outDir = Path.GetFullPath("Builds/iOS");
                 Directory.CreateDirectory(outDir);
                 PlayerSettings.iOS.sdkVersion = iOSSdkVersion.DeviceSDK;
-                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.goldbox.uip");
+                PlayerSettings.productName = "GameDev Interview Prep";
+                PlayerSettings.SetApplicationIdentifier(BuildTargetGroup.iOS, "com.bobbynangle.uip");
                 var options = new BuildPlayerOptions
                 {
                     scenes = new[]

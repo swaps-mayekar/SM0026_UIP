@@ -1,6 +1,6 @@
 # Privacy Summary
 
-Unity Interview Prep (Gold Box) stores learning progress on-device only for this MVP.
+GameDev Interview Prep (Bobby Nangle) stores learning progress on-device only for this MVP.
 
 ## Data stored locally
 

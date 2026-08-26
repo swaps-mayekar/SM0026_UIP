@@ -1,6 +1,8 @@
-# Unity Interview Prep (MVP)
+# GameDev Interview Prep (MVP)
 
-Offline-first Unity interview preparation app for iOS (portrait), built in Unity 6.
+Offline-first game developer interview preparation app for iOS (portrait), built in Unity 6.
+
+**Bundle ID:** `com.bobbynangle.uip`
 
 ## Features
 
@@ -34,4 +36,4 @@ Optional menu items:
 
 See `Docs/Disclaimer.md`, `Docs/PrivacySummary.md`, and `Docs/AppStoreReviewNotes.md`.
 
-**Trademark note:** the product name includes “Unity” and remains a review/trademark risk despite the in-app independent-resource disclaimer.
+**Trademark note:** the app discusses Unity technologies for interview prep and shows an independent-resource disclaimer; it is not affiliated with Unity Technologies.

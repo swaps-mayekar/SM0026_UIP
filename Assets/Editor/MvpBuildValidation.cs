@@ -117,12 +117,12 @@ namespace UIP.EditorTools
                 throw new InvalidOperationException("Build settings must include splash then app scene.");
             }
 
-            if (PlayerSettings.productName != "Unity Interview Prep")
+            if (PlayerSettings.productName != "GameDev Interview Prep")
             {
                 throw new InvalidOperationException("Unexpected product name.");
             }
 
-            if (PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS) != "com.goldbox.uip")
+            if (PlayerSettings.GetApplicationIdentifier(BuildTargetGroup.iOS) != "com.bobbynangle.uip")
             {
                 throw new InvalidOperationException("Unexpected iOS bundle id.");
             }
